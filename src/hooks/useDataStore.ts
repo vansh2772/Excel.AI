@@ -108,7 +108,7 @@ export const useDataStore = () => {
       setDatasetInfo(existing.info);
       setAnalytics(existing.analytics);
     }
-  }, []);
+  }, [persistenceService]);
 
   const loadFile = useCallback(async (file: File) => {
     setLoading(true);
@@ -154,7 +154,7 @@ export const useDataStore = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [persistenceService]);
 
   const clearData = useCallback(() => {
     setData([]);
@@ -163,7 +163,7 @@ export const useDataStore = () => {
     setError(null);
     persistenceService.clearCurrentDataset();
     console.log('Data store cleared');
-  }, []);
+  }, [persistenceService]);
 
   const updateData = useCallback((newData: DataRow[]) => {
     if (!datasetInfo) return;
@@ -180,7 +180,7 @@ export const useDataStore = () => {
     setData(newData);
     setDatasetInfo(updatedInfo);
     setAnalytics(updatedAnalytics);
-  }, [datasetInfo]);
+  }, [datasetInfo, persistenceService]);
 
   const getDataSample = useCallback((sampleSize: number = 100) => {
     return data.slice(0, sampleSize);
@@ -192,7 +192,7 @@ export const useDataStore = () => {
 
   const getDatasetSummaries = useCallback(() => {
     return persistenceService.getDatasetSummaries();
-  }, []);
+  }, [persistenceService]);
 
   return {
     data,

@@ -104,6 +104,17 @@ export const Dashboard: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-8">
+                <div className="flex justify-end">
+                  <Button
+                    variant="primary"
+                    onClick={clearData}
+                    className="flex items-center space-x-2"
+                    aria-label="Upload New File"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Upload New File</span>
+                  </Button>
+                </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">AI-Enhanced Data Analysis</h2>

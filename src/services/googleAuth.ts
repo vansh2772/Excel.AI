@@ -79,6 +79,7 @@ class GoogleAuthService {
           },
           auto_select: false,
           cancel_on_tap_outside: true,
+          use_fedcm_for_prompt: true, // Opt-in to FedCM for future compatibility
           // Add error handling for configuration issues
           error_callback: (error: any) => {
             console.error('Google Auth initialization error:', error);

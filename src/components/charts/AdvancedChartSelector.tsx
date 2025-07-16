@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { DataRow, ChartConfig } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { SmartChartRecommendations } from './SmartChartRecommendations';
 import { DataContext } from '../../services/aiService';
-import { BarChart3, LineChart, PieChart, ScatterChart as Scatter, AreaChart as Area, Box, Layers, Download, Settings, Sparkles } from 'lucide-react';
+import { BarChart3, LineChart, PieChart, Dot } from 'lucide-react';
 
 interface AdvancedChartSelectorProps {
   data: DataRow[];
@@ -19,10 +19,8 @@ const chartTypes = [
   { type: 'bar', icon: BarChart3, label: '2D Bar Chart', description: 'Compare values across categories' },
   { type: 'line', icon: LineChart, label: 'Line Chart', description: 'Show trends over time' },
   { type: 'pie', icon: PieChart, label: 'Pie Chart', description: 'Show proportions of a whole' },
-  { type: 'scatter', icon: Scatter, label: 'Scatter Plot', description: 'Show correlation between variables' },
-  { type: 'area', icon: Area, label: 'Area Chart', description: 'Show cumulative values over time' },
-  { type: '3d-bar', icon: Box, label: '3D Bar Chart', description: 'Interactive 3D bar visualization' },
-  { type: '3d-scatter', icon: Layers, label: '3D Scatter Plot', description: 'Three-dimensional data points' }
+  { type: 'scatter', icon: Dot, label: 'Scatter Plot', description: 'Show correlation between variables' },
+  { type: 'area', icon: LineChart, label: 'Area Chart', description: 'Show cumulative values over time' },
 ] as const;
 
 const colorSchemes = [
@@ -49,7 +47,7 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [showAIRecommendations, setShowAIRecommendations] = useState(false);
 
-  const handleConfigChange = () => {
+  const handleConfigChange = useCallback(() => {
     const config: ChartConfig = {
       type: selectedType,
       xAxis,
@@ -58,13 +56,13 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
       colors: selectedColors
     };
     onChartConfigChange(config);
-  };
+  }, [selectedType, xAxis, yAxis, title, selectedColors, onChartConfigChange]);
 
   React.useEffect(() => {
     if (xAxis && yAxis) {
       handleConfigChange();
     }
-  }, [selectedType, xAxis, yAxis, title, selectedColors]);
+  }, [handleConfigChange, xAxis, yAxis]);
 
   const handleApplyRecommendation = (recommendedConfig: Partial<ChartConfig>) => {
     if (recommendedConfig.type) {

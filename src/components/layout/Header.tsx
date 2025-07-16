@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 // import { useTheme } from '../../contexts/ThemeContext';
 import { Button } from '../ui/Button';
-import { BarChart3, Database, LogOut, User, Shield, Moon, Sun } from 'lucide-react';
+import { BarChart3, Database, LogOut, User, Shield } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();

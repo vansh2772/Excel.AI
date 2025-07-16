@@ -15,7 +15,8 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={clsx(
-        'bg-white/10 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/20 dark:border-gray-700/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:bg-white/15 dark:hover:bg-gray-800/60',
+        'bg-white/10 dark:bg-gray-900/50 backdrop-blur-xl rounded-xl border border-white/20 dark:border-gray-700/50 shadow-xl transition-all duration-300',
+        'hover:shadow-2xl hover:scale-[1.02]',
         {
           'p-4': padding === 'sm',
           'p-6': padding === 'md',

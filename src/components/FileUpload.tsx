@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle } from 'lucide-react';
 import { Card } from './ui/Card';
 import { LoadingSpinner } from './ui/LoadingSpinner';
-import { validateFileType, validateFileSize, getFileInfo } from '../utils/fileProcessing';
+import { validateFileType, validateFileSize } from '../utils/fileProcessing';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;

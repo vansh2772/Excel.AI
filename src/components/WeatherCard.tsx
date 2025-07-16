@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  Thermometer, 
   Droplets, 
   Wind, 
   Eye, 

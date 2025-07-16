@@ -56,7 +56,7 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
     colors: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
   });
 
-  const chartRef = useRef<any>(null);
+  const chartRef = useRef<unknown>(null);
 
   const chartData = generateChartData(data, chartConfig.xAxis, 15);
 

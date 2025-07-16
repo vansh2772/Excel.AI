@@ -29,6 +29,18 @@ export default {
       colors: {
         primaryText: '#000000', // <-- Custom black color class
       },
+      fontFamily: {
+        sans: [
+          'Inter',
+          'ui-sans-serif',
+          'system-ui',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica Neue',
+          'Arial',
+          'sans-serif',
+        ],
+      },
     },
   },
   plugins: [],

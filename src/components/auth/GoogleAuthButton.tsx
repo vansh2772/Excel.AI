@@ -70,7 +70,8 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ mode }) => {
       <Button
         type="button"
         variant="outline"
-        className="w-full flex items-center justify-center space-x-3 py-3 bg-white/10 dark:bg-gray-800/50 border-white/20 dark:border-gray-700/50 hover:bg-white/20 dark:hover:bg-gray-700/50 text-white backdrop-blur-sm transition-all duration-200"
+        className="w-full flex items-center justify-center space-x-3 py-3 bg-white/10 dark:bg-gray-800/50 border-white/20 dark:border-gray-700/50 hover:bg-white/20 dark:hover:bg-gray-700/50 text-white backdrop-blur-sm transition-all duration-200 font-sans"
+        aria-label={mode === 'login' ? 'Sign in with Google' : 'Sign up with Google'}
         onClick={handleGoogleAuth}
         disabled={loading || !configStatus.configured}
       >

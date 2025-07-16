@@ -119,7 +119,7 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-400">{stat.label}</p>
-                  <p className="text-xl font-bold text-white">{stat.value}</p>
+                  <p className="text-xl font-bold text-black dark:text-white">{stat.value}</p>
                 </div>
               </div>
             ))}
@@ -198,7 +198,7 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
                     const stats = analytics.summary[column];
                     return (
                       <tr key={column} className="border-b border-white/10 hover:bg-white/5">
-                        <td className="py-3 px-4 font-medium text-white">{column}</td>
+                        <td className="py-3 px-4 font-medium text-black dark:text-white">{column}</td>
                         <td className="py-3 px-4 text-right text-gray-300">
                           {stats?.mean !== undefined ? stats.mean : 'N/A'}
                         </td>
@@ -245,7 +245,7 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
                     const stats = analytics.summary[column];
                     return (
                       <tr key={column} className="border-b border-white/10 hover:bg-white/5">
-                        <td className="py-3 px-4 font-medium text-white">{column}</td>
+                        <td className="py-3 px-4 font-medium text-black dark:text-white">{column}</td>
                         <td className="py-3 px-4 text-right text-gray-300">
                           {stats?.uniqueValues !== undefined ? stats.uniqueValues : 'N/A'}
                         </td>

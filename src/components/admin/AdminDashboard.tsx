@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AdminStats, User, AnalysisHistory } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -15,7 +15,6 @@ import {
   Eye,
   Trash2,
   RefreshCw,
-  AlertTriangle,
   CheckCircle,
   Database,
   Clock
@@ -65,7 +64,7 @@ class AdminDataService {
         name: 'System Administrator',
         role: 'admin',
         createdAt: new Date('2024-01-01'),
-        lastLogin: new Date(Date.now() - 5 * 60 * 1000) // 5 minutes ago
+        lastLogin: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 minutes ago
       },
       {
         id: '4',
@@ -223,11 +222,7 @@ export const AdminDashboard: React.FC = () => {
 
   const adminService = AdminDataService.getInstance();
 
-  useEffect(() => {
-    loadAdminData();
-  }, []);
-
-  const loadAdminData = async () => {
+  const loadAdminData = useCallback(async () => {
     setLoading(true);
     try {
       const [statsData, usersData] = await Promise.all([
@@ -243,7 +238,11 @@ export const AdminDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [adminService]);
+
+  useEffect(() => {
+    loadAdminData();
+  }, [loadAdminData]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -387,7 +386,7 @@ export const AdminDashboard: React.FC = () => {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setSelectedTab(tab.id as any)}
+              onClick={() => setSelectedTab(tab.id as 'overview' | 'users' | 'activity')}
               className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 selectedTab === tab.id
                   ? 'border-blue-400 text-blue-400'
