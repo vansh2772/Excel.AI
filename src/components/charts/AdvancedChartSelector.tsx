@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { SmartChartRecommendations } from './SmartChartRecommendations';
 import { DataContext } from '../../services/aiService';
-import { BarChart3, LineChart, PieChart, Dot } from 'lucide-react';
+import { BarChart3, LineChart, PieChart, Dot, Sparkles, Settings, Download } from 'lucide-react';
 
 interface AdvancedChartSelectorProps {
   data: DataRow[];
