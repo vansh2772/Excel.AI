@@ -23,8 +23,8 @@ class AIService {
   private async initializeModel() {
     if (this.initialized) return;
     
-    if (!API_KEY || API_KEY === 'your_google_ai_api_key_here') {
-      throw new Error('Google AI API key is not configured. Please add VITE_GOOGLE_AI_API_KEY to your environment variables.');
+    if (!API_KEY || API_KEY === 'your_google_ai_api_key_here' || API_KEY.trim() === '') {
+      throw new Error('Google AI API key is not configured.');
     }
 
     try {
@@ -33,7 +33,7 @@ class AIService {
       this.initialized = true;
     } catch (error) {
       console.error('Failed to initialize AI model:', error);
-      throw new Error('Failed to initialize AI service. Please check your API key.');
+      throw new Error('Failed to initialize AI service.');
     }
   }
 
@@ -47,7 +47,7 @@ class AIService {
     const { data, analytics, fileName } = dataContext;
     
     const prompt = `
-    Analyze this dataset and provide key insights:
+    Analyze this dataset and provide premium-level professional insights:
     
     Dataset: ${fileName}
     Total Rows: ${analytics.totalRows}
@@ -62,13 +62,13 @@ class AIService {
     ${JSON.stringify(analytics.summary, null, 2)}
     
     Please provide:
-    1. Key insights about the data
-    2. Interesting patterns or trends
-    3. Recommended visualizations
-    4. Potential data quality issues
-    5. Business implications
+    1. Key Executive Insights
+    2. Deep Pattern Recognition
+    3. Advanced Visualization Recommendations (2D & 3D)
+    4. Data Quality & Integrity Audit
+    5. Actionable Strategic Implications
     
-    Keep the response concise and actionable.
+    Format the response using professional markdown with a clear structure.
     `;
 
     try {
@@ -93,42 +93,34 @@ class AIService {
     if (dataContext) {
       const { data, analytics, fileName } = dataContext;
       prompt = `
-      You are an AI assistant helping users analyze their Excel/CSV data. 
+      You are the Excel.AI Advanced Analyst, a professional data scientist assistant.
       
-      Current Dataset Context:
+      Current Context:
       - File: ${fileName}
       - Rows: ${analytics.totalRows}
       - Columns: ${analytics.totalColumns}
-      - Numeric Columns: ${analytics.numericColumns.join(', ')}
-      - Text Columns: ${analytics.stringColumns.join(', ')}
+      - Data Profile: ${analytics.numericColumns.length} numeric, ${analytics.stringColumns.length} categorical
       
-      Sample Data:
+      Sample Data Fragment:
       ${JSON.stringify(data.slice(0, 2), null, 2)}
       
-      Statistical Summary:
+      Statistical Profile:
       ${JSON.stringify(analytics.summary, null, 2)}
       
-      Previous conversation:
+      Chat History:
       ${chatHistory.slice(-5).map(msg => `${msg.role}: ${msg.content}`).join('\n')}
       
-      User Question: ${message}
+      User Input: ${message}
       
-      Please provide helpful, specific advice about their data analysis, visualization recommendations, or answer their questions about the dataset. Be concise and actionable.
+      Provide a highly professional, expert-level response. Use bullet points and bold text where appropriate. Focus on technical accuracy and business value.
       `;
     } else {
       prompt = `
-      You are an AI assistant for an Excel Analytics Platform. Help users with:
-      - Data analysis questions
-      - Chart and visualization recommendations
-      - Excel/CSV data interpretation
-      - Platform features and usage
+      You are the official AI representative for the Excel.AI Platform. 
+      Help the user with data science questions, chart recommendations, and platform features.
+      The platform features 3D visualizations, AI-driven insights, and secure Firebase storage.
       
-      Previous conversation:
-      ${chatHistory.slice(-5).map(msg => `${msg.role}: ${msg.content}`).join('\n')}
-      
-      User Question: ${message}
-      
-      Provide helpful, concise responses about data analysis and the platform.
+      User Input: ${message}
       `;
     }
 
@@ -152,19 +144,16 @@ class AIService {
     const { analytics } = dataContext;
     
     const prompt = `
-    Based on this data analysis context, recommend the best chart type:
+    Recommend the optimal visualization for this data configuration in Excel.AI:
     
     X-Axis: ${xAxis} (Type: ${analytics.numericColumns.includes(xAxis) ? 'Numeric' : 'Categorical'})
     Y-Axis: ${yAxis} (Type: ${analytics.numericColumns.includes(yAxis) ? 'Numeric' : 'Categorical'})
     
-    Dataset Info:
-    - Total Rows: ${analytics.totalRows}
-    - Numeric Columns: ${analytics.numericColumns.join(', ')}
-    - Text Columns: ${analytics.stringColumns.join(', ')}
+    Available Engines:
+    - 2D: Bar, Line, Pie, Scatter, Area (Chart.js)
+    - 3D: 3D Bar, 3D Scatter (WebGL/Three.js)
     
-    Available chart types: bar, line, pie, scatter, area, 3d-bar, 3d-scatter
-    
-    Recommend the best chart type and explain why in 2-3 sentences.
+    Pick the absolute best one and explain the professional rationale in 2-3 sentences.
     `;
 
     try {
@@ -180,80 +169,44 @@ class AIService {
   private getFallbackInsights(dataContext: DataContext): string {
     const { analytics, fileName } = dataContext;
     
-    return `📊 **Dataset Analysis: ${fileName}**
-
-**Overview:**
-- Total Records: ${analytics.totalRows.toLocaleString()}
-- Columns: ${analytics.totalColumns}
-- Numeric Fields: ${analytics.numericColumns.length}
-- Text Fields: ${analytics.stringColumns.length}
-
-**Key Insights:**
-${analytics.numericColumns.length > 0 ? `
-• **Numeric Data Available**: You have ${analytics.numericColumns.length} numeric columns (${analytics.numericColumns.join(', ')}) perfect for statistical analysis and trend visualization.` : ''}
-
-${analytics.stringColumns.length > 0 ? `
-• **Categorical Data**: ${analytics.stringColumns.length} text columns (${analytics.stringColumns.join(', ')}) ideal for grouping and classification analysis.` : ''}
-
-**Recommended Visualizations:**
+    return `### ✨ **Excel.AI Advanced Insights: ${fileName}**
+\n---
+\n**📈 Executive Overview:**
+- **Record Volume:** ${analytics.totalRows.toLocaleString()} entries processed
+- **Dimensionality:** ${analytics.totalColumns} unique data columns
+- **Data Composition:** ${analytics.numericColumns.length} quantitative / ${analytics.stringColumns.length} qualitative fields
+\n**🔍 Preliminary Patterns:**
+${analytics.numericColumns.length > 0 ? `• **Quantitative Density**: Detected significant numeric signals in ${analytics.numericColumns.join(', ')}. Perfect for multi-variable regression or trend analysis.` : ''}
+${analytics.stringColumns.length > 0 ? `• **Categorical Diversity**: High-granularity segments found in ${analytics.stringColumns.join(', ')}.` : ''}
+\n**🚀 Recommended Visualizations:**
 ${analytics.numericColumns.length > 0 && analytics.stringColumns.length > 0 ? 
-  '• Bar charts for comparing categories\n• Line charts for trends over time\n• Scatter plots for correlation analysis' :
-  analytics.numericColumns.length > 0 ? 
-    '• Histograms for distribution analysis\n• Box plots for statistical summaries' :
-    '• Pie charts for category distribution\n• Bar charts for frequency analysis'
+  '• **3D Bar Engine**: Contrast categories against quantitative metrics.\n• **Trend Analysis**: Use Line charts for sequence-based data.' :
+  '• **Scatter Matrix**: Perfect for multi-dimensional numeric exploration.'
 }
-
-**Next Steps:**
-1. Select your X and Y axes for visualization
-2. Try different chart types to explore patterns
-3. Use the AI chat for specific questions about your data
-
-*Note: AI insights are limited without API configuration. Configure VITE_GOOGLE_AI_API_KEY for enhanced analysis.*`;
+\n**💡 Strategic Recommendation:**
+Pick a primary metric from ${analytics.numericColumns[0] || 'your columns'} and cross-analyze against categories to identify hidden efficiency gaps.
+\n> *Connect your Google AI API Key for Deep Strategic Analysis.*`;
   }
 
   private getFallbackChatResponse(message: string, dataContext?: DataContext): string {
     const lowerMessage = message.toLowerCase();
     
-    if (lowerMessage.includes('chart') || lowerMessage.includes('visualization')) {
-      return `For chart recommendations, I suggest:
-
-${dataContext ? `Based on your dataset "${dataContext.fileName}":` : 'General recommendations:'}
-
-• **Bar Charts**: Great for comparing categories
-• **Line Charts**: Perfect for showing trends over time
-• **Pie Charts**: Ideal for showing proportions
-• **Scatter Plots**: Excellent for correlation analysis
-
-${dataContext ? `Your data has ${dataContext.analytics.numericColumns.length} numeric and ${dataContext.analytics.stringColumns.length} text columns, which gives you many visualization options.` : ''}
-
-Try different chart types with your data to discover insights!
-
-*Note: Enhanced AI responses require Google AI API configuration.*`;
+    if (lowerMessage.includes('chart') || lowerMessage.includes('visual')) {
+      return `**Excel.AI Visualization Engine Recommendations:**
+\n• **3D bar / 3D Scatter**: Best for "wow factor" presentations and identifying clusters in 3D space.
+• **Line / Area**: Ideal for temporal data or cumulative trends.
+• **Scatter Plots**: The gold standard for identifying correlations.
+\n${dataContext ? `For your dataset "${dataContext.fileName}", I recommend starting with a **Bar Chart** using \`${dataContext.analytics.stringColumns[0]}\` and \`${dataContext.analytics.numericColumns[0]}\`.` : ''}
+\n*Configure your AI API key to unlock real-time predictive charting.*`;
     }
     
-    if (lowerMessage.includes('data') || lowerMessage.includes('analysis')) {
-      return `Here are some data analysis tips:
-
-1. **Start with Overview**: Check data types, missing values, and basic statistics
-2. **Explore Patterns**: Look for trends, outliers, and correlations
-3. **Visualize**: Create charts to reveal hidden insights
-4. **Ask Questions**: What story does your data tell?
-
-${dataContext ? `Your current dataset has ${dataContext.analytics.totalRows} rows and ${dataContext.analytics.totalColumns} columns - plenty to explore!` : 'Upload your data to get specific insights!'}
-
-*Note: For detailed AI analysis, please configure your Google AI API key.*`;
-    }
-    
-    return `I'm here to help with your data analysis! While my AI capabilities are limited without API configuration, I can still assist with:
-
-• Chart type recommendations
-• Data visualization best practices
-• Platform feature guidance
-• General analysis tips
-
-${dataContext ? `Your dataset "${dataContext.fileName}" is loaded and ready for analysis.` : 'Upload your Excel or CSV files to get started!'}
-
-For enhanced AI insights, please configure VITE_GOOGLE_AI_API_KEY in your environment.`;
+    return `Welcome to **Excel.AI Professional**. I am your dedicated data assistant. 
+\nI can help you with:
+• **Technical Audit**: Analyzing your data structure and quality.
+• **Visualization Strategy**: Choosing the best 2D or 3D engine for your metrics.
+• **Platform Guidance**: Navigating your secure Firebase storage and admin controls.
+\n${dataContext ? `Ready to analyze **${dataContext.fileName}** (${dataContext.analytics.totalRows} rows).` : 'Please upload a dataset to begin the deep analysis session.'}
+\n*Note: Full AI reasoning is currently in sandbox mode. Add your API key for the full experience.*`;
   }
 
   private getFallbackChartRecommendation(dataContext: DataContext, xAxis: string, yAxis: string): string {
@@ -262,31 +215,12 @@ For enhanced AI insights, please configure VITE_GOOGLE_AI_API_KEY in your enviro
     const yIsNumeric = analytics.numericColumns.includes(yAxis);
     
     if (xIsNumeric && yIsNumeric) {
-      return `**Recommended: Scatter Plot**
-
-Since both ${xAxis} and ${yAxis} are numeric, a scatter plot would be perfect to show the correlation between these variables. You could also consider a line chart if there's a time component.`;
+      return `**Optimal Visualization: 3D Scatter Plot**\n\nDual numeric variables are best explored in a 3D space to identify clusters and outliers that traditional 2D plots might miss. Use the **3D Engine** for a deeper perspective.`;
     }
     
-    if (!xIsNumeric && yIsNumeric) {
-      return `**Recommended: Bar Chart**
-
-With ${xAxis} as categories and ${yAxis} as numeric values, a bar chart is ideal for comparing values across different categories. This will clearly show which categories have higher or lower values.`;
-    }
-    
-    if (!xIsNumeric && !yIsNumeric) {
-      return `**Recommended: Pie Chart or Bar Chart**
-
-Since both fields are categorical, consider a pie chart to show proportions or a bar chart to compare frequencies. The choice depends on whether you want to emphasize parts of a whole (pie) or direct comparison (bar).`;
-    }
-    
-    return `**Recommended: Line Chart or Bar Chart**
-
-Based on your data types, either visualization could work well. Try both to see which reveals more insights about your data patterns.
-
-*Note: Enhanced AI recommendations require Google AI API configuration.*`;
+    return `**Optimal Visualization: 3D Bar Chart**\n\nTo effectively communicate magnitude across categories like ${xAxis}, the **Excel.AI 3D Bar Engine** provides a premium, high-impact visualization that stands out in reports and dashboards.`;
   }
 
-  // Check if AI service is properly configured
   isConfigured(): boolean {
     return !!(API_KEY && API_KEY !== 'your_google_ai_api_key_here' && API_KEY.trim() !== '');
   }
