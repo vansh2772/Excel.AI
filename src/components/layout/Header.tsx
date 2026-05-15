@@ -15,11 +15,11 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-theme-primary rounded-xl shadow-lg">
-              <BarChart3 className="w-6 h-6 text-white" />
+            <div className="flex items-center justify-center w-10 h-10 bg-white rounded-xl shadow-lg">
+              <BarChart3 className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-theme-primary">
+              <h1 className="text-xl font-bold text-white">
                 Excel.AI Platform
               </h1>
               <p className="text-sm text-gray-300 dark:text-gray-400">Intelligent data visualization & AI insights</p>
@@ -42,9 +42,9 @@ export const Header: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : user?.role === 'admin' ? (
-                    <Shield className="w-4 h-4 text-theme-primary" />
+                    <Shield className="w-4 h-4 text-white" />
                   ) : (
-                    <User className="w-4 h-4 text-theme-primary" />
+                    <User className="w-4 h-4 text-white" />
                   )}
                 </div>
                 <div className="hidden sm:block">

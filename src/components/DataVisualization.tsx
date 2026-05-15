@@ -25,7 +25,7 @@ interface DataVisualizationProps {
   stringColumns: string[];
 }
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#F97316', '#84CC16'];
+const COLORS = ['#FFFFFF', '#E5E5E5', '#D4D4D4', '#A3A3A3', '#737373', '#525252', '#404040', '#262626'];
 
 export const DataVisualization: React.FC<DataVisualizationProps> = ({
   data,
@@ -53,7 +53,7 @@ export const DataVisualization: React.FC<DataVisualizationProps> = ({
               />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="value" fill="#FFFFFF" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         );
@@ -90,9 +90,9 @@ export const DataVisualization: React.FC<DataVisualizationProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="value" 
-                stroke="#3B82F6" 
+                stroke="#FFFFFF" 
                 strokeWidth={2}
-                dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                dot={{ fill: '#FFFFFF', strokeWidth: 2, r: 4 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -115,7 +115,7 @@ export const DataVisualization: React.FC<DataVisualizationProps> = ({
             <select
               value={selectedColumn}
               onChange={(e) => setSelectedColumn(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="px-3 py-2 border border-neutral-700 bg-neutral-900 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-sm text-white"
             >
               <optgroup label="Text Columns">
                 {stringColumns.map((column) => (
@@ -160,10 +160,10 @@ export const DataVisualization: React.FC<DataVisualizationProps> = ({
       </CardHeader>
       <CardContent>
         <div className="mb-4">
-          <h4 className="text-lg font-medium text-gray-900 mb-2">
+          <h4 className="text-lg font-medium text-white mb-2">
             {selectedColumn} Distribution
           </h4>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-neutral-400">
             Showing top 10 values for the selected column
           </p>
         </div>

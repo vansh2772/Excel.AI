@@ -81,11 +81,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     let baseClass = 'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200 ';
     
     if (isDragReject || error) {
-      baseClass += 'border-red-500 bg-red-50';
+      baseClass += 'border-red-500 bg-red-500/10';
     } else if (isDragActive) {
-      baseClass += 'border-blue-500 bg-blue-50';
+      baseClass += 'border-white bg-white/10';
     } else {
-      baseClass += 'border-gray-300 hover:border-gray-400 hover:bg-gray-50';
+      baseClass += 'border-neutral-700 hover:border-neutral-500 hover:bg-neutral-800/50';
     }
     
     return baseClass;
@@ -93,7 +93,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const renderIcon = () => {
     if (loading) {
-      return <LoadingSpinner size="lg" className="mx-auto text-blue-600" />;
+      return <LoadingSpinner size="lg" className="mx-auto text-white" />;
     }
     
     if (isDragReject || error) {
@@ -101,7 +101,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     }
     
     if (isDragActive) {
-      return <Upload className="w-16 h-16 text-blue-600" />;
+      return <Upload className="w-16 h-16 text-white" />;
     }
     
     return <FileSpreadsheet className="w-16 h-16 text-gray-400" />;
@@ -111,8 +111,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (loading) {
       return (
         <div>
-          <p className="text-lg font-medium text-gray-700">Processing your file...</p>
-          <p className="text-sm text-gray-500">This may take a moment for large datasets</p>
+          <p className="text-lg font-medium text-white">Processing your file...</p>
+          <p className="text-sm text-neutral-400">This may take a moment for large datasets</p>
         </div>
       );
     }
@@ -129,18 +129,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (isDragActive) {
       return (
         <div>
-          <p className="text-lg font-medium text-blue-700">Drop your file here</p>
-          <p className="text-sm text-blue-600">Release to upload</p>
+          <p className="text-lg font-medium text-white">Drop your file here</p>
+          <p className="text-sm text-neutral-300">Release to upload</p>
         </div>
       );
     }
     
     return (
       <div>
-        <p className="text-lg font-medium text-gray-700">
+        <p className="text-lg font-medium text-white">
           Drag & drop your Excel or CSV file here
         </p>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-neutral-400 mt-1">
           or click to browse files
         </p>
       </div>
@@ -166,15 +166,15 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           {/* File requirements */}
           <div className="text-xs text-gray-500 space-y-1">
             <div className="flex items-center justify-center space-x-2">
-              <CheckCircle className="w-3 h-3 text-green-500" />
+              <CheckCircle className="w-3 h-3 text-white" />
               <span>Excel files (.xlsx, .xls)</span>
             </div>
             <div className="flex items-center justify-center space-x-2">
-              <CheckCircle className="w-3 h-3 text-green-500" />
+              <CheckCircle className="w-3 h-3 text-white" />
               <span>CSV files (.csv)</span>
             </div>
             <div className="flex items-center justify-center space-x-2">
-              <CheckCircle className="w-3 h-3 text-green-500" />
+              <CheckCircle className="w-3 h-3 text-white" />
               <span>Up to 100,000 rows</span>
             </div>
           </div>

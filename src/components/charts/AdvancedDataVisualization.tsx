@@ -53,7 +53,7 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
     xAxis: stringColumns[0] || numericColumns[0] || '',
     yAxis: numericColumns[0] || '',
     title: 'Data Visualization',
-    colors: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
+    colors: ['#FFFFFF', '#A3A3A3', '#525252', '#000000', '#D4D4D4']
   });
 
   const chartRef = useRef<unknown>(null);
@@ -105,10 +105,10 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
         }
       },
       tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: 'white',
-        bodyColor: 'white',
-        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: 'black',
+        bodyColor: 'black',
+        borderColor: '#000000',
         borderWidth: 1
       }
     },
@@ -119,8 +119,12 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
           text: chartConfig.xAxis
         },
         ticks: {
+          color: '#FFFFFF',
           maxRotation: 45,
           minRotation: 0
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
         }
       },
       y: {
@@ -128,7 +132,13 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
           display: true,
           text: chartConfig.yAxis || 'Count'
         },
-        beginAtZero: true
+        beginAtZero: true,
+        ticks: {
+          color: '#FFFFFF'
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)'
+        }
       }
     } : undefined,
     animation: {
@@ -165,7 +175,7 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
   const renderChart = () => {
     if (!data || data.length === 0) {
       return (
-        <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+        <div className="h-96 flex items-center justify-center bg-neutral-900 rounded-lg border border-neutral-800">
           <div className="text-center">
             <div className="text-gray-400 mb-4">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +191,7 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
 
     if (!chartConfig.xAxis) {
       return (
-        <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+        <div className="h-96 flex items-center justify-center bg-neutral-900 rounded-lg border border-neutral-800">
           <div className="text-center">
             <div className="text-gray-400 mb-4">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +275,7 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
         }
         default:
           return (
-            <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="h-96 flex items-center justify-center bg-neutral-900 rounded-lg border border-neutral-800">
               <div className="text-center">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Unsupported Chart Type</h3>
                 <p className="text-gray-500">Please select a different chart type</p>
@@ -276,7 +286,7 @@ export const AdvancedDataVisualization: React.FC<AdvancedDataVisualizationProps>
     } catch (error) {
       console.error('Chart rendering error:', error);
       return (
-        <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">
+        <div className="h-96 flex items-center justify-center bg-neutral-900 rounded-lg border border-neutral-800">
           <div className="text-center">
             <div className="text-red-500 mb-4">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">

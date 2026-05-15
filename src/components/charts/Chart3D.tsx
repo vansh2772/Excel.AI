@@ -34,7 +34,7 @@ const Bar3D: React.FC<BarProps> = ({ position, height, color, label }) => {
       <Text
         position={[0, -0.5, 0]}
         fontSize={0.3}
-        color="black"
+        color="white"
         anchorX="center"
         anchorY="middle"
         maxWidth={2}
@@ -78,8 +78,8 @@ const Scatter3D: React.FC<{ data: DataRow[]; config: ChartConfig }> = ({ data, c
 const LoadingFallback: React.FC = () => (
   <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
     <div className="text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-      <p className="text-gray-600">Loading 3D visualization...</p>
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+      <p className="text-neutral-400">Loading 3D visualization...</p>
     </div>
   </div>
 );
@@ -129,7 +129,7 @@ export const Chart3D: React.FC<Chart3DProps> = ({ data, config }) => {
 
   try {
     return (
-      <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden">
+      <div className="w-full h-96 bg-black rounded-lg overflow-hidden">
         <Suspense fallback={<LoadingFallback />}>
           <Canvas 
             camera={{ position: [15, 10, 15], fov: 60 }}
@@ -139,7 +139,7 @@ export const Chart3D: React.FC<Chart3DProps> = ({ data, config }) => {
           >
             <ambientLight intensity={0.6} />
             <pointLight position={[10, 10, 10]} />
-            <pointLight position={[-10, -10, -10]} color="blue" intensity={0.3} />
+            <pointLight position={[-10, -10, -10]} color="white" intensity={0.3} />
             
             {config.type === '3d-bar' ? (
               <>
@@ -172,7 +172,7 @@ export const Chart3D: React.FC<Chart3DProps> = ({ data, config }) => {
             <Text
               position={[0, 8, 0]}
               fontSize={1}
-              color="black"
+              color="white"
               anchorX="center"
               anchorY="middle"
               maxWidth={20}

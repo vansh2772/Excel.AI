@@ -28,43 +28,43 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
       label: 'Total Rows',
       value: analytics.totalRows.toLocaleString(),
       icon: Grid,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/20'
+      color: 'text-white',
+      bgColor: 'bg-white/10'
     },
     {
       label: 'Total Columns',
       value: analytics.totalColumns.toString(),
       icon: Hash,
-      color: 'text-green-400',
-      bgColor: 'bg-green-500/20'
+      color: 'text-white',
+      bgColor: 'bg-white/10'
     },
     {
       label: 'File Size',
       value: formatFileSize(datasetInfo.size),
       icon: HardDrive,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/20'
+      color: 'text-white',
+      bgColor: 'bg-white/10'
     },
     {
       label: 'Numeric Columns',
       value: analytics.numericColumns.length.toString(),
       icon: TrendingUp,
-      color: 'text-orange-400',
-      bgColor: 'bg-orange-500/20'
+      color: 'text-white',
+      bgColor: 'bg-white/10'
     },
     {
       label: 'Text Columns',
       value: analytics.stringColumns.length.toString(),
       icon: Type,
-      color: 'text-pink-400',
-      bgColor: 'bg-pink-500/20'
+      color: 'text-white',
+      bgColor: 'bg-white/10'
     },
     {
       label: 'Upload Date',
       value: new Date(datasetInfo.uploadDate).toLocaleDateString(),
       icon: Calendar,
-      color: 'text-gray-400',
-      bgColor: 'bg-gray-500/20'
+      color: 'text-neutral-400',
+      bgColor: 'bg-white/5'
     }
   ];
 
@@ -103,7 +103,7 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-3">
-            <FileText className="w-6 h-6 text-blue-400" />
+            <FileText className="w-6 h-6 text-white" />
             <div>
               <CardTitle>Dataset Overview</CardTitle>
               <p className="text-sm text-gray-400 mt-1">{datasetInfo.name}</p>
@@ -133,9 +133,9 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               {issues.length > 0 ? (
-                <AlertTriangle className="w-5 h-5 text-yellow-400" />
+                <AlertTriangle className="w-5 h-5 text-white" />
               ) : (
-                <CheckCircle className="w-5 h-5 text-green-400" />
+                <CheckCircle className="w-5 h-5 text-white" />
               )}
               <span>Data Quality Assessment</span>
             </CardTitle>
@@ -144,11 +144,11 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
             <div className="space-y-4">
               {issues.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-yellow-400 mb-2">Potential Issues:</h4>
+                  <h4 className="text-sm font-medium text-white mb-2">Potential Issues:</h4>
                   <ul className="space-y-1">
                     {issues.map((issue, index) => (
                       <li key={index} className="text-sm text-gray-300 flex items-center space-x-2">
-                        <AlertTriangle className="w-3 h-3 text-yellow-400" />
+                        <AlertTriangle className="w-3 h-3 text-white" />
                         <span>{issue}</span>
                       </li>
                     ))}
@@ -158,11 +158,11 @@ export const DataOverview: React.FC<DataOverviewProps> = ({
               
               {recommendations.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-blue-400 mb-2">Recommendations:</h4>
+                   <h4 className="text-sm font-medium text-white mb-2">Recommendations:</h4>
                   <ul className="space-y-1">
                     {recommendations.map((rec, index) => (
-                      <li key={index} className="text-sm text-gray-300 flex items-center space-x-2">
-                        <CheckCircle className="w-3 h-3 text-blue-400" />
+                      <li key={index} className="text-sm text-neutral-300 flex items-center space-x-2">
+                        <CheckCircle className="w-3 h-3 text-white" />
                         <span>{rec}</span>
                       </li>
                     ))}

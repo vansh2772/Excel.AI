@@ -15,8 +15,8 @@ export default {
           '50%': { transform: 'translateY(-20px) rotate(180deg)' },
         },
         glow: {
-          '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
-          '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' },
+          '0%': { boxShadow: '0 0 5px rgba(255, 255, 255, 0.2)' },
+          '100%': { boxShadow: '0 0 20px rgba(255, 255, 255, 0.5)' },
         },
       },
       backdropBlur: {
@@ -29,10 +29,10 @@ export default {
       colors: {
         theme: {
           light: '#ffffff',
-          accent1: '#676f9d',
-          accent2: '#424769',
-          dark: '#2d3250',
-          primary: '#f9b17a',
+          accent1: '#a3a3a3', // neutral-400
+          accent2: '#404040', // neutral-700
+          dark: '#000000',
+          primary: '#ffffff',
         },
       },
       fontFamily: {

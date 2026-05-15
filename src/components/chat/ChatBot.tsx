@@ -185,7 +185,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={onToggleMinimize}
-          className="rounded-full w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+          className="rounded-full w-14 h-14 bg-black border border-white hover:bg-neutral-900 shadow-lg"
         >
           <BarChart3 className="w-6 h-6" />
         </Button>
@@ -194,9 +194,9 @@ export const ChatBot: React.FC<ChatBotProps> = ({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm md:max-w-md rounded-2xl shadow-2xl bg-white flex flex-col border border-blue-200 overflow-hidden h-[600px]">
+    <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm md:max-w-md rounded-2xl shadow-2xl bg-white flex flex-col border border-neutral-300 overflow-hidden h-[600px]">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white sticky top-0 z-10">
+      <div className="flex items-center justify-between px-4 py-3 bg-black text-white sticky top-0 z-10">
         <div className="flex items-center space-x-2">
           <div className="w-9 h-9 bg-white/30 rounded-full flex items-center justify-center">
             <BarChart3 className="w-6 h-6 text-white" />
@@ -224,12 +224,12 @@ export const ChatBot: React.FC<ChatBotProps> = ({
             <div className={
               `max-w-[80%] px-4 py-2 rounded-2xl shadow ${
                 message.role === 'user'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-br-none'
+                  ? 'bg-neutral-800 text-white rounded-br-none'
                   : 'bg-white text-gray-900 border border-gray-200 rounded-bl-none flex items-start space-x-2'
               }`
             }>
               {message.role === 'assistant' && (
-                <BarChart3 className="w-5 h-5 text-blue-500 mr-2 mt-1" />
+                <BarChart3 className="w-5 h-5 text-neutral-500 mr-2 mt-1" />
               )}
               <div>
                 <div className="text-sm">{message.content}</div>
@@ -248,7 +248,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="Type your message..."
-          className="flex-1 resize-none border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[38px] max-h-[80px] bg-gray-100"
+          className="flex-1 resize-none border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 min-h-[38px] max-h-[80px] bg-neutral-50"
           rows={1}
           disabled={isLoading || uploadingFile}
           style={{ color: 'black' }}
@@ -256,7 +256,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({
         <Button
           onClick={triggerFileUpload}
           disabled={uploadingFile}
-          className="flex items-center space-x-2 bg-blue-800 text-white font-bold border-2 border-blue-900 rounded-full px-4 py-2 shadow-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-200 focus:outline-none disabled:opacity-60 text-base"
+          className="flex items-center space-x-2 bg-black text-white font-bold border border-white rounded-full px-4 py-2 shadow-lg hover:bg-neutral-900 transition-all duration-200 focus:outline-none disabled:opacity-60 text-base"
         >
           <Paperclip className="w-5 h-5 mr-2" />
           <span>Upload</span>
@@ -264,7 +264,7 @@ export const ChatBot: React.FC<ChatBotProps> = ({
         <Button
           onClick={handleSendMessage}
           disabled={!inputMessage.trim() || isLoading || uploadingFile}
-          className="flex items-center justify-center bg-blue-800 text-white font-bold border-2 border-blue-900 rounded-full px-4 py-2 shadow-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-200 focus:outline-none disabled:opacity-60 text-base"
+          className="flex items-center justify-center bg-black text-white font-bold border border-white rounded-full px-4 py-2 shadow-lg hover:bg-neutral-900 transition-all duration-200 focus:outline-none disabled:opacity-60 text-base"
           title='Send'
         >
           <Send className="w-5 h-5" />

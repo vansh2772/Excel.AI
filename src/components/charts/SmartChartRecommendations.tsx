@@ -63,14 +63,14 @@ export const SmartChartRecommendations: React.FC<SmartChartRecommendationsProps>
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Sparkles className="w-5 h-5 text-purple-600" />
+          <Sparkles className="w-5 h-5 text-white" />
           <span>AI Chart Recommendations</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-neutral-400">
               Get AI-powered chart type recommendations based on your data
             </p>
             <Button
@@ -90,14 +90,14 @@ export const SmartChartRecommendations: React.FC<SmartChartRecommendationsProps>
           </div>
 
           {recommendation && (
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <div className="bg-white/10 border border-white/20 rounded-lg p-4">
               <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-4 h-4 text-white" />
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-4 h-4 text-black" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium text-purple-900 mb-2">AI Recommendation</h4>
-                  <p className="text-sm text-purple-800 whitespace-pre-wrap">{recommendation}</p>
+                  <h4 className="font-medium text-white mb-2">AI Recommendation</h4>
+                  <p className="text-sm text-neutral-300 whitespace-pre-wrap">{recommendation}</p>
                   <Button
                     onClick={applySmartConfig}
                     size="sm"

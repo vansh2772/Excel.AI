@@ -15,8 +15,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return (
       <div className="min-h-screen bg-theme-dark text-theme-light flex items-center justify-center">
         <div className="relative">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent"></div>
-          <div className="absolute inset-0 rounded-full bg-blue-400/20 animate-pulse"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+          <div className="absolute inset-0 rounded-full bg-white/10 animate-pulse"></div>
         </div>
       </div>
     );
@@ -61,21 +61,21 @@ const AppContent: React.FC = () => {
           style: {
             background: 'rgba(17, 24, 39, 0.95)',
             color: '#fff',
-            border: '1px solid rgba(59, 130, 246, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
             backdropFilter: 'blur(10px)',
           },
           success: {
             duration: 3000,
             iconTheme: {
-              primary: '#10B981',
-              secondary: '#fff',
+              primary: '#ffffff',
+              secondary: '#000',
             },
           },
           error: {
             duration: 4000,
             iconTheme: {
-              primary: '#EF4444',
-              secondary: '#fff',
+              primary: '#ffffff',
+              secondary: '#000',
             },
           },
         }}

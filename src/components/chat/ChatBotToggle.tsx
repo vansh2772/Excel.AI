@@ -32,7 +32,7 @@ export const ChatBotToggle: React.FC<ChatBotToggleProps> = ({ dataContext, onDat
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={handleToggle}
-          className="rounded-full w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg animate-pulse"
+          className="rounded-full w-14 h-14 bg-black border border-white hover:bg-neutral-900 shadow-lg animate-pulse"
         >
           <BarChart3 className="w-6 h-6" />
         </Button>

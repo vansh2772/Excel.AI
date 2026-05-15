@@ -80,7 +80,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, fileName }) => {
                 placeholder="Search data..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="pl-10 pr-4 py-2 border border-neutral-700 bg-neutral-900 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-sm text-white"
               />
             </div>
             <Button
@@ -98,17 +98,17 @@ export const DataTable: React.FC<DataTableProps> = ({ data, fileName }) => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-gray-200">
+              <tr className="border-b-2 border-neutral-800">
                 {columns.map((column) => (
                   <th
                     key={column}
-                    className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="text-left py-3 px-4 font-medium text-white cursor-pointer hover:bg-neutral-800 transition-colors"
                     onClick={() => handleSort(column)}
                   >
                     <div className="flex items-center space-x-1">
                       <span>{column}</span>
                       {sortColumn === column && (
-                        <span className="text-blue-600">
+                        <span className="text-white">
                           {sortDirection === 'asc' ? '↑' : '↓'}
                         </span>
                       )}
@@ -121,10 +121,10 @@ export const DataTable: React.FC<DataTableProps> = ({ data, fileName }) => {
               {paginatedData.map((row, index) => (
                 <tr
                   key={index}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  className="border-b border-neutral-800 hover:bg-neutral-900 transition-colors"
                 >
                   {columns.map((column) => (
-                    <td key={column} className="py-3 px-4 text-gray-700">
+                    <td key={column} className="py-3 px-4 text-neutral-300">
                       {row[column] !== null && row[column] !== undefined 
                         ? String(row[column]) 
                         : '-'
@@ -139,7 +139,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, fileName }) => {
         
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-neutral-400">
               Showing {((currentPage - 1) * itemsPerPage) + 1} to{' '}
               {Math.min(currentPage * itemsPerPage, sortedData.length)} of{' '}
               {sortedData.length} entries
@@ -154,7 +154,7 @@ export const DataTable: React.FC<DataTableProps> = ({ data, fileName }) => {
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </Button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-neutral-400">
                 Page {currentPage} of {totalPages}
               </span>
               <Button

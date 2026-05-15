@@ -57,7 +57,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
   return (
     <Card className="w-full max-w-md mx-auto bg-white/10 dark:bg-gray-900/50 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 shadow-2xl font-sans" aria-label="Register Form">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        <CardTitle className="text-2xl font-bold text-white">
           Create Account
         </CardTitle>
         <p className="text-gray-300 dark:text-gray-400">Join our analytics platform</p>
@@ -92,7 +92,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
                 type="text"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white placeholder-gray-400 backdrop-blur-sm"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
                 placeholder="Enter your full name"
                 required
               />
@@ -111,7 +111,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white placeholder-gray-400 backdrop-blur-sm"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
                 placeholder="Enter your email"
                 required
               />
@@ -130,7 +130,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
                 type={showPassword ? 'text' : 'password'}
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-12 py-3 bg-white/10 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white placeholder-gray-400 backdrop-blur-sm"
+                className="w-full pl-10 pr-12 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
                 placeholder="Create a password"
                 required
               />
@@ -156,7 +156,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-gray-800/50 border border-white/20 dark:border-gray-700/50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-white placeholder-gray-400 backdrop-blur-sm"
+                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
                 placeholder="Confirm your password"
                 required
               />
@@ -165,7 +165,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+            className="w-full bg-white text-black hover:bg-neutral-200 transition-colors shadow-lg"
             disabled={loading}
           >
             {loading ? (
@@ -184,7 +184,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
             Already have an account?{' '}
             <button
               onClick={onToggleMode}
-              className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+              className="text-white hover:text-neutral-300 font-medium transition-colors border-b border-white"
             >
               Sign in
             </button>

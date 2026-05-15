@@ -24,11 +24,9 @@ const chartTypes = [
 ] as const;
 
 const colorSchemes = [
-  { name: 'Blue', colors: ['#3B82F6', '#1E40AF', '#60A5FA', '#93C5FD'] },
-  { name: 'Green', colors: ['#10B981', '#047857', '#34D399', '#6EE7B7'] },
-  { name: 'Purple', colors: ['#8B5CF6', '#5B21B6', '#A78BFA', '#C4B5FD'] },
-  { name: 'Orange', colors: ['#F59E0B', '#D97706', '#FBBF24', '#FCD34D'] },
-  { name: 'Rainbow', colors: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'] }
+  { name: 'Monochrome', colors: ['#FFFFFF', '#A3A3A3', '#525252', '#000000'] },
+  { name: 'Grayscale', colors: ['#E5E5E5', '#D4D4D4', '#737373', '#404040'] },
+  { name: 'Contrast', colors: ['#FFFFFF', '#737373', '#FFFFFF', '#737373'] }
 ];
 
 export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
@@ -118,7 +116,7 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
         <CardContent className="space-y-6">
           {/* Chart Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-neutral-300 mb-3">
               Chart Type
             </label>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -128,8 +126,8 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
                   onClick={() => setSelectedType(chart.type)}
                   className={`p-3 rounded-lg border-2 transition-all duration-200 ${
                     selectedType === chart.type
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      ? 'border-white bg-white/10 text-white'
+                      : 'border-neutral-800 hover:border-neutral-700 hover:bg-neutral-900'
                   }`}
                 >
                   <chart.icon className="w-6 h-6 mx-auto mb-2" />
@@ -142,13 +140,13 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
           {/* Axis Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-300 mb-2">
                 X-Axis (Categories)
               </label>
               <select
                 value={xAxis}
                 onChange={(e) => setXAxis(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-neutral-700 bg-neutral-900 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-white"
               >
                 <option value="">Select column...</option>
                 {allColumns.map((column) => (
@@ -160,13 +158,13 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-neutral-300 mb-2">
                 Y-Axis (Values)
               </label>
               <select
                 value={yAxis}
                 onChange={(e) => setYAxis(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-neutral-700 bg-neutral-900 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-white"
               >
                 <option value="">Select column...</option>
                 {numericColumns.map((column) => (
@@ -180,14 +178,14 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
 
           {/* Chart Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
               Chart Title
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-neutral-700 bg-neutral-900 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-white"
               placeholder="Enter chart title..."
             />
           </div>
@@ -203,8 +201,8 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
                     onClick={() => setSelectedColors(scheme.colors)}
                     className={`p-3 rounded-lg border-2 transition-all duration-200 ${
                       selectedColors === scheme.colors
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-white bg-white/10'
+                        : 'border-neutral-800 hover:border-neutral-700'
                     }`}
                   >
                     <div className="flex space-x-1 mb-2">
@@ -225,8 +223,8 @@ export const AdvancedChartSelector: React.FC<AdvancedChartSelectorProps> = ({
 
           {/* Chart Description */}
           {selectedType && (
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">
+            <div className="bg-neutral-900 border border-neutral-800 p-3 rounded-lg">
+              <p className="text-sm text-neutral-400">
                 {chartTypes.find(c => c.type === selectedType)?.description}
               </p>
             </div>

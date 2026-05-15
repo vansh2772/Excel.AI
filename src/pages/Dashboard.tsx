@@ -63,7 +63,7 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200 mb-8">
+        <div className="border-b border-white/20 mb-8">
           <nav className="-mb-px flex space-x-8">
             {tabs.map((tab) => (
               <button
@@ -71,7 +71,7 @@ export const Dashboard: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as 'analysis' | 'history' | 'admin')}
                 className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-white text-white'
                     : 'border-transparent text-theme-light/60 hover:text-theme-light hover:border-theme-accent1'
                 }`}
               >

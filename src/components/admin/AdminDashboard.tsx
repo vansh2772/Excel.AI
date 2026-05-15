@@ -285,8 +285,8 @@ export const AdminDashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-400 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading admin dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-4"></div>
+          <p className="text-neutral-400">Loading admin dashboard...</p>
         </div>
       </div>
     );
@@ -297,32 +297,32 @@ export const AdminDashboard: React.FC = () => {
       title: 'Total Users',
       value: stats?.totalUsers.toLocaleString() || '0',
       icon: Users,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-500/20',
+      color: 'text-white',
+      bgColor: 'bg-white/10',
       trend: '+12% this month'
     },
     {
       title: 'Total Uploads',
       value: stats?.totalUploads.toLocaleString() || '0',
       icon: Upload,
-      color: 'text-green-400',
-      bgColor: 'bg-green-500/20',
+      color: 'text-white',
+      bgColor: 'bg-white/10',
       trend: '+8% this week'
     },
     {
       title: 'Active Users (24h)',
       value: stats?.activeUsers.toLocaleString() || '0',
       icon: Activity,
-      color: 'text-orange-400',
-      bgColor: 'bg-orange-500/20',
+      color: 'text-white',
+      bgColor: 'bg-white/10',
       trend: '68% of total users'
     },
     {
       title: 'Storage Used',
       value: `${stats?.storageUsed || 0} GB`,
       icon: HardDrive,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/20',
+      color: 'text-white',
+      bgColor: 'bg-white/10',
       trend: 'of 100 GB limit'
     }
   ];
@@ -348,8 +348,8 @@ export const AdminDashboard: React.FC = () => {
             <span>Refresh</span>
           </Button>
           <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-green-400" />
-            <span className="text-sm font-medium text-green-400">Admin Access</span>
+            <Shield className="w-5 h-5 text-white" />
+            <span className="text-sm font-medium text-white">Admin Access</span>
           </div>
         </div>
       </div>
@@ -359,7 +359,7 @@ export const AdminDashboard: React.FC = () => {
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-white" />
               <span className="text-white font-medium">System Status: Operational</span>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-400">
@@ -389,7 +389,7 @@ export const AdminDashboard: React.FC = () => {
               onClick={() => setSelectedTab(tab.id as 'overview' | 'users' | 'activity')}
               className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 selectedTab === tab.id
-                  ? 'border-blue-400 text-blue-400'
+                  ? 'border-white text-white'
                   : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
               }`}
             >
@@ -438,7 +438,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="flex-1 mx-4">
                       <div className="w-full bg-gray-700 rounded-full h-3">
                         <div
-                          className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+                          className="h-3 rounded-full bg-white"
                           style={{ width: `${chart.percentage}%` }}
                         />
                       </div>
@@ -460,7 +460,7 @@ export const AdminDashboard: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-400">
+                  <div className="text-2xl font-bold text-white">
                     {stats?.recentActivity.filter(a => 
                       Date.now() - a.uploadDate.getTime() < 24 * 60 * 60 * 1000
                     ).length}
@@ -468,7 +468,7 @@ export const AdminDashboard: React.FC = () => {
                   <div className="text-sm text-gray-400">Uploads Today</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold text-white">
                     {users.filter(u => u.lastLogin && 
                       Date.now() - u.lastLogin.getTime() < 60 * 60 * 1000
                     ).length}
@@ -476,7 +476,7 @@ export const AdminDashboard: React.FC = () => {
                   <div className="text-sm text-gray-400">Active This Hour</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-400">
+                  <div className="text-2xl font-bold text-white">
                     {Math.round((stats?.storageUsed || 0) / 100 * 100)}%
                   </div>
                   <div className="text-sm text-gray-400">Storage Usage</div>
@@ -525,8 +525,8 @@ export const AdminDashboard: React.FC = () => {
                         <td className="py-3 px-4">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             user.role === 'admin' 
-                              ? 'bg-purple-500/20 text-purple-400' 
-                              : 'bg-gray-500/20 text-gray-400'
+                              ? 'bg-white/20 text-white' 
+                              : 'bg-neutral-500/20 text-neutral-400'
                           }`}>
                             {user.role}
                           </span>
@@ -543,10 +543,10 @@ export const AdminDashboard: React.FC = () => {
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
                             <div className={`w-2 h-2 rounded-full ${
-                              isOnline ? 'bg-green-400' : 'bg-gray-500'
+                              isOnline ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'bg-neutral-500'
                             }`} />
                             <span className={`text-xs ${
-                              isOnline ? 'text-green-400' : 'text-gray-500'
+                              isOnline ? 'text-white' : 'text-neutral-500'
                             }`}>
                               {isOnline ? 'Online' : 'Offline'}
                             </span>
@@ -610,7 +610,7 @@ export const AdminDashboard: React.FC = () => {
                     className="flex items-center justify-between p-4 border border-white/20 rounded-lg hover:bg-white/5 transition-colors"
                   >
                     <div className="flex items-center space-x-4">
-                      <BarChart3 className="w-8 h-8 text-blue-400" />
+                      <BarChart3 className="w-8 h-8 text-white" />
                       <div>
                         <h4 className="font-medium text-white">{activity.fileName}</h4>
                         <p className="text-sm text-gray-400">

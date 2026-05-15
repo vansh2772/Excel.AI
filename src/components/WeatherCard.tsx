@@ -66,7 +66,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weatherData, loading, onRefre
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="bg-white/5 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Droplets className="w-4 h-4 text-blue-300" />
+              <Droplets className="w-4 h-4 text-white" />
               <span className="text-white/70 text-sm">Humidity</span>
             </div>
             <div className="text-white font-semibold">{weatherData.current.humidity}%</div>
@@ -74,7 +74,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weatherData, loading, onRefre
 
           <div className="bg-white/5 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Wind className="w-4 h-4 text-green-300" />
+              <Wind className="w-4 h-4 text-white" />
               <span className="text-white/70 text-sm">Wind</span>
             </div>
             <div className="text-white font-semibold">{weatherData.current.windSpeed} km/h</div>
@@ -83,7 +83,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weatherData, loading, onRefre
 
           <div className="bg-white/5 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Gauge className="w-4 h-4 text-yellow-300" />
+              <Gauge className="w-4 h-4 text-white" />
               <span className="text-white/70 text-sm">Pressure</span>
             </div>
             <div className="text-white font-semibold">{weatherData.current.pressure} mb</div>
@@ -91,7 +91,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weatherData, loading, onRefre
 
           <div className="bg-white/5 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Eye className="w-4 h-4 text-purple-300" />
+              <Eye className="w-4 h-4 text-white" />
               <span className="text-white/70 text-sm">Visibility</span>
             </div>
             <div className="text-white font-semibold">{weatherData.current.visibility} km</div>
@@ -99,7 +99,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weatherData, loading, onRefre
 
           <div className="bg-white/5 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
-              <Sun className="w-4 h-4 text-orange-300" />
+              <Sun className="w-4 h-4 text-white" />
               <span className="text-white/70 text-sm">UV Index</span>
             </div>
             <div className="text-white font-semibold">{weatherData.current.uvIndex}</div>
@@ -129,7 +129,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weatherData, loading, onRefre
               </div>
               
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1 text-blue-300">
+                <div className="flex items-center gap-1 text-white/70">
                   <Droplets className="w-3 h-3" />
                   <span className="text-xs">{day.chanceOfRain}%</span>
                 </div>

@@ -234,7 +234,7 @@ export const AnalysisHistory: React.FC = () => {
       <Card>
         <CardContent className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
             <p className="text-gray-400">Loading analysis history...</p>
           </div>
         </CardContent>
@@ -247,7 +247,7 @@ export const AnalysisHistory: React.FC = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <History className="w-6 h-6 text-blue-400" />
+            <History className="w-6 h-6 text-white" />
             <div>
               <CardTitle>Analysis History</CardTitle>
               <p className="text-sm text-gray-400 mt-1">
@@ -280,7 +280,7 @@ export const AnalysisHistory: React.FC = () => {
               placeholder="Search analyses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400"
+              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-white placeholder-gray-400"
             />
           </div>
           <div className="relative">
@@ -288,7 +288,7 @@ export const AnalysisHistory: React.FC = () => {
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="pl-10 pr-8 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
+              className="pl-10 pr-8 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-white focus:border-white text-white"
             >
               {chartTypes.map(type => (
                 <option key={type} value={type} className="bg-gray-800">
@@ -325,7 +325,7 @@ export const AnalysisHistory: React.FC = () => {
                 >
                   <div className="flex items-center space-x-4">
                     <div className="flex-shrink-0">
-                      <ChartIcon className="w-8 h-8 text-blue-400" />
+                      <ChartIcon className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
@@ -392,11 +392,11 @@ export const AnalysisHistory: React.FC = () => {
           <div className="mt-6 pt-6 border-t border-white/20">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
               <div className="p-3 bg-white/5 rounded-lg">
-                <div className="text-lg font-bold text-blue-400">{filteredHistory.length}</div>
+                <div className="text-lg font-bold text-white">{filteredHistory.length}</div>
                 <div className="text-xs text-gray-400">Total Analyses</div>
               </div>
               <div className="p-3 bg-white/5 rounded-lg">
-                <div className="text-lg font-bold text-green-400">
+                <div className="text-lg font-bold text-white">
                   {filteredHistory.filter(item => 
                     Date.now() - item.uploadDate.getTime() < 7 * 24 * 60 * 60 * 1000
                   ).length}
@@ -404,13 +404,13 @@ export const AnalysisHistory: React.FC = () => {
                 <div className="text-xs text-gray-400">This Week</div>
               </div>
               <div className="p-3 bg-white/5 rounded-lg">
-                <div className="text-lg font-bold text-purple-400">
+                <div className="text-lg font-bold text-white">
                   {new Set(filteredHistory.map(item => item.chartType)).size}
                 </div>
                 <div className="text-xs text-gray-400">Chart Types Used</div>
               </div>
               <div className="p-3 bg-white/5 rounded-lg">
-                <div className="text-lg font-bold text-orange-400">
+                <div className="text-lg font-bold text-white">
                   {filteredHistory.filter(item => item.fileName.includes('.xlsx')).length}
                 </div>
                 <div className="text-xs text-gray-400">Excel Files</div>
