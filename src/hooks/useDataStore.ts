@@ -50,15 +50,16 @@ export const useDataStore = () => {
 
       // --- Firebase Storage (Optional/Free Tier Fallback) ---
       let storageUrl = '';
-      if (storage) {
+      const storageDisabled = import.meta.env.VITE_DISABLE_STORAGE === 'true';
+
+      if (storage && !storageDisabled) {
         try {
           const uid = auth.currentUser?.uid || 'anonymous';
           const storageRef = ref(storage, `uploads/${uid}/${Date.now()}_${file.name}`);
           const snapshot = await uploadBytes(storageRef, file);
           storageUrl = await getDownloadURL(snapshot.ref);
         } catch (storageErr) {
-          // If user hasn't upgraded or enabled Storage, we just log and skip
-          console.warn('Storage upload skipped (Spark Plan limitation or location not set).');
+          console.warn('Storage upload skipped (Spark Plan or CORS). Use VITE_DISABLE_STORAGE=true to hide this.');
         }
       }
 
