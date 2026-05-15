@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-
 import { Button } from '../ui/Button';
-
 import { aiService, ChatMessage, DataContext } from '../../services/aiService';
 import { processFile } from '../../utils/fileProcessing';
 import { calculateStatistics } from '../../utils/dataProcessing';
@@ -10,7 +8,9 @@ import {
   Minimize2, 
   BarChart3,
   X,
-  Paperclip
+  Paperclip,
+  Sparkles,
+  Bot
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -34,8 +34,8 @@ export const ChatBot: React.FC<ChatBotProps> = ({
       id: '1',
       role: 'assistant',
       content: dataContext 
-        ? `Hi! I'm Excel.AI, your intelligent data analyst. I can help you understand your dataset "${dataContext.fileName}" and suggest the best ways to visualize your data. What would you like to know?`
-        : "Hi! I'm Excel.AI, your intelligent assistant for Excel and CSV analysis. Upload your files directly here or ask me anything about data analysis, chart recommendations, and insights. How can I help you today?",
+        ? `Hi! I'm your Excel.AI analyst. I've scanned "${dataContext.fileName}". What insights can I uncover for you today?`
+        : "Welcome to Excel.AI! I'm your intelligent data assistant. Upload a file or ask me anything about data analysis and visualization.",
       timestamp: new Date()
     }
   ]);
@@ -59,21 +59,10 @@ export const ChatBot: React.FC<ChatBotProps> = ({
   }, [dataContext]);
 
   const handleFileUpload = async (file: File) => {
-    if (!file) return;
-
     setUploadingFile(true);
-    
-    // Add user message about file upload
-    const uploadMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: `📁 Uploaded file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, uploadMessage]);
+    toast.loading('Analyzing file structure...', { id: 'upload' });
 
     try {
-      // Process the file
       const processedData = await processFile(file);
       const analytics = calculateStatistics(processedData);
       
@@ -84,90 +73,62 @@ export const ChatBot: React.FC<ChatBotProps> = ({
       };
 
       setCurrentDataContext(newDataContext);
-      
-      // Notify parent component if callback provided
-      if (onDataUploaded) {
-        onDataUploaded(newDataContext);
-      }
+      if (onDataUploaded) onDataUploaded(newDataContext);
 
-      // Generate automatic insights
       const insights = await aiService.generateInsights(newDataContext);
       
       const insightMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
+        id: Date.now().toString(),
         role: 'assistant',
-        content: `✅ File processed successfully! Here's what I found in your data:\n\n${insights}\n\n💡 You can now ask me specific questions about your data or request chart recommendations!`,
+        content: `✅ **Analysis Complete!**\n\n${insights}`,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, insightMessage]);
-      toast.success('File uploaded and analyzed successfully!');
-      
-    } catch {
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
+      toast.success('File analyzed!', { id: 'upload' });
+    } catch (err) {
+      toast.error('Processing failed', { id: 'upload' });
+      const errorMsg: ChatMessage = {
+        id: Date.now().toString(),
         role: 'assistant',
-        content: `❌ Sorry, I couldn't process your file. Please make sure it's a valid Excel (.xlsx, .xls) or CSV file. Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        content: `❌ Error: ${err instanceof Error ? err.message : 'Invalid file format.'}`,
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, errorMessage]);
-      toast.error('Failed to process file');
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setUploadingFile(false);
-    }
-  };
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
-    // Reset input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
     }
   };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
-    const userMessage: ChatMessage = {
+    const userMsg: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
       content: inputMessage,
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMsg]);
     setInputMessage('');
     setIsLoading(true);
 
     try {
       const response = await aiService.chatWithData(inputMessage, currentDataContext, messages);
-      
-      const assistantMessage: ChatMessage = {
+      const assistantMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: response,
         timestamp: new Date()
       };
-
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages(prev => [...prev, assistantMsg]);
     } catch {
-      toast.error('Failed to get AI response');
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again or check your API configuration.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      toast.error('AI error');
     } finally {
       setIsLoading(false);
     }
   };
-
-
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -176,107 +137,114 @@ export const ChatBot: React.FC<ChatBotProps> = ({
     }
   };
 
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
-  };
-
   if (isMinimized) {
     return (
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={onToggleMinimize}
-          className="rounded-full w-14 h-14 bg-black border border-white hover:bg-neutral-900 shadow-lg"
+          className="rounded-full w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 shadow-xl shadow-indigo-500/20 hover:scale-110 transition-transform flex items-center justify-center p-0"
         >
-          <BarChart3 className="w-6 h-6" />
+          <Bot className="w-8 h-8 text-white" />
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm md:max-w-md rounded-2xl shadow-2xl bg-white flex flex-col border border-neutral-300 overflow-hidden h-[600px]">
+    <div className="fixed bottom-6 right-6 z-50 w-full max-w-sm md:max-w-md rounded-2xl shadow-2xl glass flex flex-col border border-indigo-500/20 overflow-hidden h-[600px] animate-in slide-in-from-bottom-4 duration-300">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-black text-white sticky top-0 z-10">
-        <div className="flex items-center space-x-2">
-          <div className="w-9 h-9 bg-white/30 rounded-full flex items-center justify-center">
-            <BarChart3 className="w-6 h-6 text-white" />
+      <div className="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-indigo-600 to-violet-700 text-white">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <span className="font-bold text-lg">Excel.AI</span>
+          <div>
+            <span className="font-bold text-lg block leading-none">Excel.AI</span>
+            <span className="text-[10px] text-indigo-100 uppercase tracking-widest font-bold">Intelligent Assistant</span>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          {onToggleMinimize && (
-            <Button onClick={onToggleMinimize} variant="ghost" className="text-white hover:bg-white/20 p-1 rounded-full">
-              <Minimize2 className="w-5 h-5" />
-            </Button>
-          )}
-          {onClose && (
-            <Button onClick={onClose} variant="ghost" className="text-white hover:bg-white/20 p-1 rounded-full">
-              <X className="w-5 h-5" />
-            </Button>
-          )}
+        <div className="flex items-center space-x-1">
+          <button onClick={onToggleMinimize} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <Minimize2 className="w-5 h-5" />
+          </button>
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <X className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 bg-gray-50 space-y-4">
-        {messages.map((message) => (
-          <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={
-              `max-w-[80%] px-4 py-2 rounded-2xl shadow ${
-                message.role === 'user'
-                  ? 'bg-neutral-800 text-white rounded-br-none'
-                  : 'bg-white text-gray-900 border border-gray-200 rounded-bl-none flex items-start space-x-2'
-              }`
-            }>
-              {message.role === 'assistant' && (
-                <BarChart3 className="w-5 h-5 text-neutral-500 mr-2 mt-1" />
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 bg-slate-950/50">
+        {messages.map((m) => (
+          <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+              m.role === 'user'
+                ? 'bg-indigo-600 text-white rounded-br-none shadow-lg shadow-indigo-900/20'
+                : 'glass border border-indigo-500/10 text-slate-200 rounded-bl-none'
+            }`}>
+              {m.role === 'assistant' && (
+                <div className="flex items-center space-x-1 mb-1">
+                  <Bot className="w-3 h-3 text-indigo-400" />
+                  <span className="text-[10px] font-bold text-indigo-400 uppercase">AI ANALYST</span>
+                </div>
               )}
-              <div>
-                <div className="text-sm">{message.content}</div>
-                <div className="text-xs text-gray-400 mt-1">{message.timestamp.toLocaleTimeString()}</div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed">{m.content}</div>
+              <div className={`text-[10px] mt-2 ${m.role === 'user' ? 'text-indigo-200' : 'text-slate-500'}`}>
+                {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="glass border border-indigo-500/10 px-4 py-3 rounded-2xl rounded-bl-none flex items-center space-x-2">
+              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" />
+              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="bg-white border-t px-4 py-3 flex items-center space-x-2">
-        <textarea
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Type your message..."
-          className="flex-1 resize-none border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 min-h-[38px] max-h-[80px] bg-neutral-50"
-          rows={1}
-          disabled={isLoading || uploadingFile}
-          style={{ color: 'black' }}
-        />
-        <Button
-          onClick={triggerFileUpload}
-          disabled={uploadingFile}
-          className="flex items-center space-x-2 bg-black text-white font-bold border border-white rounded-full px-4 py-2 shadow-lg hover:bg-neutral-900 transition-all duration-200 focus:outline-none disabled:opacity-60 text-base"
-        >
-          <Paperclip className="w-5 h-5 mr-2" />
-          <span>Upload</span>
-        </Button>
-        <Button
-          onClick={handleSendMessage}
-          disabled={!inputMessage.trim() || isLoading || uploadingFile}
-          className="flex items-center justify-center bg-black text-white font-bold border border-white rounded-full px-4 py-2 shadow-lg hover:bg-neutral-900 transition-all duration-200 focus:outline-none disabled:opacity-60 text-base"
-          title='Send'
-        >
-          <Send className="w-5 h-5" />
-        </Button>
+      {/* Footer */}
+      <div className="p-4 glass border-t border-indigo-500/10 space-y-3">
+        <div className="flex items-center space-x-2">
+          <textarea
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={handleKeyPress}
+            placeholder="Ask a question about your data..."
+            className="flex-1 bg-indigo-500/5 border border-indigo-500/20 rounded-xl px-4 py-2 text-sm text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none min-h-[44px] max-h-[120px]"
+            rows={1}
+            disabled={isLoading || uploadingFile}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={!inputMessage.trim() || isLoading || uploadingFile}
+            className="w-11 h-11 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl flex items-center justify-center transition-colors disabled:opacity-50 shadow-lg shadow-indigo-900/40 flex-shrink-0"
+          >
+            <Send className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploadingFile}
+            className="text-xs flex items-center space-x-1.5 text-slate-400 hover:text-indigo-400 transition-colors bg-indigo-500/5 px-3 py-1.5 rounded-lg border border-indigo-500/10"
+          >
+            <Paperclip className="w-3.5 h-3.5" />
+            <span>{uploadingFile ? 'Analyzing...' : 'Attach Dataset'}</span>
+          </button>
+          <span className="text-[10px] text-slate-600 font-medium">ENTER TO SEND</span>
+        </div>
       </div>
 
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
         accept=".xlsx,.xls,.csv"
-        onChange={handleFileSelect}
+        onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
         className="hidden"
       />
     </div>
