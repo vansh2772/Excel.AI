@@ -4,23 +4,22 @@ import { clsx } from 'clsx';
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  padding?: 'sm' | 'md' | 'lg';
+  padding?: 'sm' | 'md' | 'lg' | 'none';
+  glow?: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({ 
-  children, 
-  className, 
-  padding = 'md' 
-}) => {
+export const Card: React.FC<CardProps> = ({ children, className, padding = 'md', glow = false }) => {
   return (
     <div
       className={clsx(
-        'bg-theme-accent2 backdrop-blur-xl rounded-xl border border-theme-accent1 shadow-xl transition-all duration-300',
-        'hover:shadow-2xl hover:scale-[1.02]',
+        'glass rounded-xl shadow-xl transition-all duration-300',
+        'hover:shadow-2xl hover:border-indigo-500/40',
+        glow && 'shadow-indigo-500/20',
         {
           'p-4': padding === 'sm',
           'p-6': padding === 'md',
           'p-8': padding === 'lg',
+          'p-0': padding === 'none',
         },
         className
       )}
@@ -30,41 +29,17 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
-interface CardHeaderProps {
-  children: React.ReactNode;
-  className?: string;
-}
+interface CardHeaderProps { children: React.ReactNode; className?: string; }
+export const CardHeader: React.FC<CardHeaderProps> = ({ children, className }) => (
+  <div className={clsx('mb-4', className)}>{children}</div>
+);
 
-export const CardHeader: React.FC<CardHeaderProps> = ({ children, className }) => {
-  return (
-    <div className={clsx('mb-4', className)}>
-      {children}
-    </div>
-  );
-};
+interface CardTitleProps { children: React.ReactNode; className?: string; }
+export const CardTitle: React.FC<CardTitleProps> = ({ children, className }) => (
+  <h3 className={clsx('text-lg font-semibold text-white', className)}>{children}</h3>
+);
 
-interface CardTitleProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export const CardTitle: React.FC<CardTitleProps> = ({ children, className }) => {
-  return (
-    <h3 className={clsx('text-lg font-semibold text-theme-primary', className)}>
-      {children}
-    </h3>
-  );
-};
-
-interface CardContentProps {
-  children: React.ReactNode;
-  className?: string;
-}
-
-export const CardContent: React.FC<CardContentProps> = ({ children, className }) => {
-  return (
-    <div className={clsx('text-theme-light', className)}>
-      {children}
-    </div>
-  );
-};
+interface CardContentProps { children: React.ReactNode; className?: string; }
+export const CardContent: React.FC<CardContentProps> = ({ children, className }) => (
+  <div className={clsx('text-slate-300', className)}>{children}</div>
+);

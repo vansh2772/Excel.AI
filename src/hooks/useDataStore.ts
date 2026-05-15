@@ -2,93 +2,22 @@ import React, { useState, useCallback } from 'react';
 import { DataRow, DatasetInfo, AnalyticsData } from '../types';
 import { calculateStatistics } from '../utils/dataProcessing';
 import { processFile } from '../utils/fileProcessing';
+import { db, storage } from '../services/firebase';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth } from '../services/firebase';
 
-// Real data persistence service
-class DataPersistenceService {
-  private static instance: DataPersistenceService;
-  private currentDataset: {
-    data: DataRow[];
-    info: DatasetInfo;
-    analytics: AnalyticsData;
-  } | null = null;
-
-  static getInstance(): DataPersistenceService {
-    if (!DataPersistenceService.instance) {
-      DataPersistenceService.instance = new DataPersistenceService();
-    }
-    return DataPersistenceService.instance;
-  }
-
-  saveDataset(data: DataRow[], info: DatasetInfo, analytics: AnalyticsData) {
-    this.currentDataset = { data, info, analytics };
-    
-    // In a real app, this would save to a backend or local storage
-    try {
-      const datasetKey = `dataset_${Date.now()}`;
-      const datasetSummary = {
-        id: datasetKey,
-        name: info.name,
-        rows: info.rows,
-        columns: info.columns,
-        uploadDate: info.uploadDate,
-        analytics: {
-          totalRows: analytics.totalRows,
-          totalColumns: analytics.totalColumns,
-          numericColumns: analytics.numericColumns,
-          stringColumns: analytics.stringColumns
-        }
-      };
-      
-      // Save summary to localStorage for persistence
-      const existingSummaries = JSON.parse(localStorage.getItem('datasetSummaries') || '[]');
-      existingSummaries.unshift(datasetSummary);
-      
-      // Keep only last 10 summaries
-      if (existingSummaries.length > 10) {
-        existingSummaries.splice(10);
-      }
-      
-      localStorage.setItem('datasetSummaries', JSON.stringify(existingSummaries));
-      localStorage.setItem('currentDataset', JSON.stringify(this.currentDataset));
-      
-      console.log('Dataset saved successfully:', datasetKey);
-    } catch (error) {
-      console.error('Failed to save dataset:', error);
-    }
-  }
-
-  getCurrentDataset() {
-    if (this.currentDataset) {
-      return this.currentDataset;
-    }
-    
-    // Try to restore from localStorage
-    try {
-      const saved = localStorage.getItem('currentDataset');
-      if (saved) {
-        this.currentDataset = JSON.parse(saved);
-        return this.currentDataset;
-      }
-    } catch (error) {
-      console.error('Failed to restore dataset:', error);
-    }
-    
-    return null;
-  }
-
-  clearCurrentDataset() {
-    this.currentDataset = null;
-    localStorage.removeItem('currentDataset');
-  }
-
-  getDatasetSummaries() {
-    try {
-      return JSON.parse(localStorage.getItem('datasetSummaries') || '[]');
-    } catch (error) {
-      console.error('Failed to get dataset summaries:', error);
-      return [];
-    }
-  }
+export interface UploadRecord {
+  id?: string;
+  userId: string;
+  userEmail: string;
+  fileName: string;
+  fileSize: number;
+  rows: number;
+  columns: number;
+  uploadDate: Date;
+  storageUrl?: string;
+  datasetId: string;
 }
 
 export const useDataStore = () => {
@@ -98,114 +27,95 @@ export const useDataStore = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const persistenceService = DataPersistenceService.getInstance();
-
-  // Initialize with any existing dataset
-  React.useEffect(() => {
-    const existing = persistenceService.getCurrentDataset();
-    if (existing) {
-      setData(existing.data);
-      setDatasetInfo(existing.info);
-      setAnalytics(existing.analytics);
-    }
-  }, [persistenceService]);
-
   const loadFile = useCallback(async (file: File) => {
     setLoading(true);
     setError(null);
-    
-    try {
-      console.log(`Processing file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
-      
-      const processedData = await processFile(file);
-      
-      if (!processedData || processedData.length === 0) {
-        throw new Error('No data found in file');
-      }
 
-      console.log(`Successfully processed ${processedData.length} rows`);
-      
+    try {
+      const processedData = await processFile(file);
+      if (!processedData || processedData.length === 0) throw new Error('No data found in file');
+
+      const datasetId = `dataset_${Date.now()}`;
       const info: DatasetInfo = {
-        id: `dataset_${Date.now()}`,
+        id: datasetId,
         name: file.name,
         rows: processedData.length,
         columns: processedData.length > 0 ? Object.keys(processedData[0]).length : 0,
         size: file.size,
         uploadDate: new Date(),
-        userId: 'current-user'
+        userId: auth.currentUser?.uid || 'anonymous',
       };
-      
-      console.log('Calculating analytics...');
+
       const analyticsData = calculateStatistics(processedData);
-      console.log('Analytics calculated:', analyticsData);
-      
-      // Save to persistence service
-      persistenceService.saveDataset(processedData, info, analyticsData);
-      
+
+      // Upload file to Firebase Storage
+      let storageUrl = '';
+      try {
+        const uid = auth.currentUser?.uid || 'anonymous';
+        const storageRef = ref(storage, `uploads/${uid}/${Date.now()}_${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        storageUrl = await getDownloadURL(snapshot.ref);
+      } catch (storageErr) {
+        console.warn('Storage upload failed (continuing without):', storageErr);
+      }
+
+      // Save metadata to Firestore
+      try {
+        const uploadRecord: Omit<UploadRecord, 'id'> = {
+          userId: auth.currentUser?.uid || 'anonymous',
+          userEmail: auth.currentUser?.email || '',
+          fileName: file.name,
+          fileSize: file.size,
+          rows: processedData.length,
+          columns: info.columns,
+          uploadDate: new Date(),
+          storageUrl,
+          datasetId,
+        };
+        await addDoc(collection(db, 'uploads'), {
+          ...uploadRecord,
+          uploadDate: serverTimestamp(),
+        });
+      } catch (dbErr) {
+        console.warn('Firestore save failed (continuing without):', dbErr);
+      }
+
+      // Cache locally
+      try {
+        localStorage.setItem('currentDataset', JSON.stringify({ data: processedData, info, analytics: analyticsData }));
+      } catch { /* ignore */ }
+
       setData(processedData);
       setDatasetInfo(info);
       setAnalytics(analyticsData);
-      
-      console.log('Data store updated successfully');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to process file';
-      console.error('File processing error:', err);
-      setError(errorMessage);
+      setError(err instanceof Error ? err.message : 'Failed to process file');
     } finally {
       setLoading(false);
     }
-  }, [persistenceService]);
+  }, []);
 
   const clearData = useCallback(() => {
     setData([]);
     setDatasetInfo(null);
     setAnalytics(null);
     setError(null);
-    persistenceService.clearCurrentDataset();
-    console.log('Data store cleared');
-  }, [persistenceService]);
+    localStorage.removeItem('currentDataset');
+  }, []);
 
-  const updateData = useCallback((newData: DataRow[]) => {
-    if (!datasetInfo) return;
-    
-    const updatedAnalytics = calculateStatistics(newData);
-    const updatedInfo = {
-      ...datasetInfo,
-      rows: newData.length,
-      columns: newData.length > 0 ? Object.keys(newData[0]).length : 0
-    };
-    
-    persistenceService.saveDataset(newData, updatedInfo, updatedAnalytics);
-    
-    setData(newData);
-    setDatasetInfo(updatedInfo);
-    setAnalytics(updatedAnalytics);
-  }, [datasetInfo, persistenceService]);
-
-  const getDataSample = useCallback((sampleSize: number = 100) => {
-    return data.slice(0, sampleSize);
-  }, [data]);
-
-  const getColumnData = useCallback((columnName: string) => {
-    return data.map(row => row[columnName]).filter(val => val !== null && val !== undefined);
-  }, [data]);
-
-  const getDatasetSummaries = useCallback(() => {
-    return persistenceService.getDatasetSummaries();
-  }, [persistenceService]);
+  const getUserUploads = useCallback(async (): Promise<UploadRecord[]> => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return [];
+    const q = query(collection(db, 'uploads'), where('userId', '==', uid), orderBy('uploadDate', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() } as UploadRecord));
+  }, []);
 
   return {
-    data,
-    datasetInfo,
-    analytics,
-    loading,
-    error,
-    loadFile,
-    clearData,
-    updateData,
-    getDataSample,
-    getColumnData,
-    getDatasetSummaries,
-    hasData: data.length > 0 && !!datasetInfo && !!analytics
+    data, datasetInfo, analytics, loading, error,
+    loadFile, clearData, getUserUploads,
+    hasData: data.length > 0 && !!datasetInfo && !!analytics,
+    getDataSample: (n = 100) => data.slice(0, n),
+    getColumnData: (col: string) => data.map(r => r[col]).filter(v => v !== null && v !== undefined),
   };
 };

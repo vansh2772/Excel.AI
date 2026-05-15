@@ -54,11 +54,11 @@ export const Dashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-theme-light">
+          <h1 className="text-3xl font-bold gradient-text">
             Welcome back, {user?.name}!
           </h1>
-          <p className="text-theme-light/80 mt-2">
-            {isAdmin ? 'Admin Dashboard - Manage your platform' : 'Analyze your data with AI-powered insights and create stunning visualizations'}
+          <p className="text-slate-400 mt-2">
+            {isAdmin ? 'Admin Dashboard — Manage your platform' : 'Analyze your data with AI-powered insights and stunning visualizations'}
           </p>
         </div>
 
@@ -71,8 +71,8 @@ export const Dashboard: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as 'analysis' | 'history' | 'admin')}
                 className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
-                    ? 'border-white text-white'
-                    : 'border-transparent text-theme-light/60 hover:text-theme-light hover:border-theme-accent1'
+                    ? 'border-indigo-400 text-indigo-400'
+                    : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-500'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />

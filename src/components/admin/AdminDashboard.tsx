@@ -1,355 +1,153 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AdminStats, User, AnalysisHistory } from '../../types';
+import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { formatDistanceToNow } from 'date-fns';
 import {
-  Users,
-  Upload,
-  Activity,
-  BarChart3,
-  HardDrive,
-  TrendingUp,
-  UserX,
-  Shield,
-  Eye,
-  Trash2,
-  RefreshCw,
-  CheckCircle,
-  Database,
-  Clock
+  Users, Upload, Activity, BarChart3, HardDrive, TrendingUp,
+  UserX, Shield, Eye, Trash2, RefreshCw, CheckCircle, Database,
+  Clock, Download, File
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-// Real data service simulation
-class AdminDataService {
-  private static instance: AdminDataService;
-  private users: User[] = [];
-  private activities: AnalysisHistory[] = [];
-  private stats: AdminStats | null = null;
+interface FirestoreUser {
+  id: string;
+  email: string;
+  name: string;
+  role: 'user' | 'admin';
+  createdAt?: { toDate?: () => Date } | Date;
+  lastLogin?: { toDate?: () => Date } | Date;
+  photoURL?: string;
+}
 
-  static getInstance(): AdminDataService {
-    if (!AdminDataService.instance) {
-      AdminDataService.instance = new AdminDataService();
-    }
-    return AdminDataService.instance;
+interface FirestoreUpload {
+  id: string;
+  userId: string;
+  userEmail: string;
+  fileName: string;
+  fileSize: number;
+  rows: number;
+  columns: number;
+  uploadDate?: { toDate?: () => Date } | Date;
+  storageUrl?: string;
+  datasetId: string;
+}
+
+function toDate(val: unknown): Date {
+  if (!val) return new Date();
+  if (val instanceof Date) return val;
+  if (typeof val === 'object' && 'toDate' in (val as object) && typeof (val as { toDate: unknown }).toDate === 'function') {
+    return (val as { toDate: () => Date }).toDate();
   }
+  return new Date();
+}
 
-  constructor() {
-    this.initializeRealData();
-  }
-
-  private initializeRealData() {
-    // Generate realistic user data
-    this.users = [
-      {
-        id: '1',
-        email: 'john.doe@company.com',
-        name: 'John Doe',
-        role: 'user',
-        createdAt: new Date('2024-01-15'),
-        lastLogin: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-      },
-      {
-        id: '2',
-        email: 'sarah.wilson@enterprise.com',
-        name: 'Sarah Wilson',
-        role: 'user',
-        createdAt: new Date('2024-01-20'),
-        lastLogin: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
-      },
-      {
-        id: '3',
-        email: 'admin@excelai.com',
-        name: 'System Administrator',
-        role: 'admin',
-        createdAt: new Date('2024-01-01'),
-        lastLogin: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 minutes ago
-      },
-      {
-        id: '4',
-        email: 'mike.chen@startup.io',
-        name: 'Mike Chen',
-        role: 'user',
-        createdAt: new Date('2024-01-25'),
-        lastLogin: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
-      },
-      {
-        id: '5',
-        email: 'lisa.garcia@analytics.com',
-        name: 'Lisa Garcia',
-        role: 'user',
-        createdAt: new Date('2024-02-01'),
-        lastLogin: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
-      }
-    ];
-
-    // Generate realistic activity data
-    this.activities = [
-      {
-        id: '1',
-        userId: '1',
-        fileName: 'Q4_Sales_Report.xlsx',
-        uploadDate: new Date(Date.now() - 3 * 60 * 60 * 1000),
-        chartType: 'bar',
-        xAxis: 'Product_Category',
-        yAxis: 'Revenue',
-        datasetId: 'ds1'
-      },
-      {
-        id: '2',
-        userId: '2',
-        fileName: 'Customer_Demographics.csv',
-        uploadDate: new Date(Date.now() - 5 * 60 * 60 * 1000),
-        chartType: 'pie',
-        xAxis: 'Age_Group',
-        yAxis: 'Count',
-        datasetId: 'ds2'
-      },
-      {
-        id: '3',
-        userId: '4',
-        fileName: 'Monthly_Trends_2024.xlsx',
-        uploadDate: new Date(Date.now() - 8 * 60 * 60 * 1000),
-        chartType: 'line',
-        xAxis: 'Month',
-        yAxis: 'Growth_Rate',
-        datasetId: 'ds3'
-      },
-      {
-        id: '4',
-        userId: '5',
-        fileName: 'Marketing_Campaign_Results.csv',
-        uploadDate: new Date(Date.now() - 12 * 60 * 60 * 1000),
-        chartType: 'scatter',
-        xAxis: 'Ad_Spend',
-        yAxis: 'Conversions',
-        datasetId: 'ds4'
-      },
-      {
-        id: '5',
-        userId: '1',
-        fileName: 'Employee_Performance.xlsx',
-        uploadDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        chartType: '3d-bar',
-        xAxis: 'Department',
-        yAxis: 'Performance_Score',
-        datasetId: 'ds5'
-      }
-    ];
-
-    this.updateStats();
-  }
-
-  private updateStats() {
-    const activeUsers = this.users.filter(user => 
-      user.lastLogin && (Date.now() - user.lastLogin.getTime()) < 24 * 60 * 60 * 1000
-    ).length;
-
-    const chartTypeCounts = this.activities.reduce((acc, activity) => {
-      acc[activity.chartType] = (acc[activity.chartType] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const mostUsedChartType = Object.entries(chartTypeCounts)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'bar';
-
-    this.stats = {
-      totalUsers: this.users.length,
-      totalUploads: this.activities.length,
-      activeUsers,
-      mostUsedChartType,
-      storageUsed: 47.3, // GB
-      recentActivity: this.activities.slice(0, 10)
-    };
-  }
-
-  async getStats(): Promise<AdminStats> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    this.updateStats();
-    return this.stats!;
-  }
-
-  async getUsers(): Promise<User[]> {
-    await new Promise(resolve => setTimeout(resolve, 600));
-    return [...this.users];
-  }
-
-  async updateUserRole(userId: string, newRole: 'user' | 'admin'): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const userIndex = this.users.findIndex(u => u.id === userId);
-    if (userIndex !== -1) {
-      this.users[userIndex].role = newRole;
-      this.updateStats();
-    }
-  }
-
-  async deleteUser(userId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    this.users = this.users.filter(u => u.id !== userId);
-    this.activities = this.activities.filter(a => a.userId !== userId);
-    this.updateStats();
-  }
-
-  async blockUser(userId: string): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // In a real app, this would set a blocked status
-    console.log(`User ${userId} blocked`);
-  }
-
-  getChartTypeDistribution() {
-    const distribution = this.activities.reduce((acc, activity) => {
-      acc[activity.chartType] = (acc[activity.chartType] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const total = this.activities.length;
-    return Object.entries(distribution).map(([type, count]) => ({
-      type: type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' '),
-      count,
-      percentage: Math.round((count / total) * 100)
-    }));
-  }
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<AdminStats | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<FirestoreUser[]>([]);
+  const [uploads, setUploads] = useState<FirestoreUpload[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'users' | 'activity'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'users' | 'uploads'>('overview');
   const [refreshing, setRefreshing] = useState(false);
 
-  const adminService = AdminDataService.getInstance();
-
-  const loadAdminData = useCallback(async () => {
-    setLoading(true);
+  const loadData = useCallback(async () => {
     try {
-      const [statsData, usersData] = await Promise.all([
-        adminService.getStats(),
-        adminService.getUsers()
+      const [usersSnap, uploadsSnap] = await Promise.all([
+        getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'))),
+        getDocs(query(collection(db, 'uploads'), orderBy('uploadDate', 'desc'))),
       ]);
-      
-      setStats(statsData);
-      setUsers(usersData);
-    } catch (error) {
+      setUsers(usersSnap.docs.map(d => ({ id: d.id, ...d.data() } as FirestoreUser)));
+      setUploads(uploadsSnap.docs.map(d => ({ id: d.id, ...d.data() } as FirestoreUpload)));
+    } catch (err) {
+      console.error('Admin load error:', err);
       toast.error('Failed to load admin data');
-      console.error('Admin data loading error:', error);
     } finally {
       setLoading(false);
     }
-  }, [adminService]);
+  }, []);
 
-  useEffect(() => {
-    loadAdminData();
-  }, [loadAdminData]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await loadAdminData();
+    await loadData();
     setRefreshing(false);
-    toast.success('Data refreshed successfully');
+    toast.success('Data refreshed!');
   };
 
-  const handleUserAction = async (userId: string, action: 'block' | 'delete' | 'promote') => {
+  const handlePromote = async (userId: string, currentRole: string) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
     try {
-      const user = users.find(u => u.id === userId);
-      if (!user) return;
-
-      if (action === 'delete') {
-        if (window.confirm(`Are you sure you want to delete user ${user.name}? This action cannot be undone.`)) {
-          await adminService.deleteUser(userId);
-          setUsers(prev => prev.filter(u => u.id !== userId));
-          toast.success('User deleted successfully');
-        }
-      } else if (action === 'promote') {
-        const newRole = user.role === 'admin' ? 'user' : 'admin';
-        await adminService.updateUserRole(userId, newRole);
-        setUsers(prev => prev.map(u => 
-          u.id === userId ? { ...u, role: newRole } : u
-        ));
-        toast.success(`User ${newRole === 'admin' ? 'promoted to admin' : 'demoted to user'}`);
-      } else if (action === 'block') {
-        if (window.confirm(`Are you sure you want to block user ${user.name}?`)) {
-          await adminService.blockUser(userId);
-          toast.success('User blocked successfully');
-        }
-      }
-    } catch (error) {
-      toast.error(`Failed to ${action} user`);
-      console.error(`User ${action} error:`, error);
-    }
+      await updateDoc(doc(db, 'users', userId), { role: newRole });
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole as 'user' | 'admin' } : u));
+      toast.success(`User ${newRole === 'admin' ? 'promoted to admin' : 'demoted to user'}`);
+    } catch { toast.error('Failed to update role'); }
   };
+
+  const handleDeleteUser = async (userId: string, name: string) => {
+    if (!window.confirm(`Delete user "${name}"? This removes their profile from the database.`)) return;
+    try {
+      await deleteDoc(doc(db, 'users', userId));
+      setUsers(prev => prev.filter(u => u.id !== userId));
+      toast.success('User deleted from database');
+    } catch { toast.error('Failed to delete user'); }
+  };
+
+  const handleDeleteUpload = async (uploadId: string, fileName: string) => {
+    if (!window.confirm(`Delete upload record for "${fileName}"?`)) return;
+    try {
+      await deleteDoc(doc(db, 'uploads', uploadId));
+      setUploads(prev => prev.filter(u => u.id !== uploadId));
+      toast.success('Upload record deleted');
+    } catch { toast.error('Failed to delete upload'); }
+  };
+
+  const totalStorage = uploads.reduce((sum, u) => sum + (u.fileSize || 0), 0);
+  const activeUsers = users.filter(u => {
+    const d = toDate(u.lastLogin);
+    return Date.now() - d.getTime() < 24 * 60 * 60 * 1000;
+  }).length;
+
+  const statCards = [
+    { title: 'Total Users', value: users.length, icon: Users, color: 'text-indigo-400', bg: 'bg-indigo-500/20', border: 'border-indigo-500/30', trend: `${users.filter(u => u.role === 'admin').length} admins` },
+    { title: 'Total Uploads', value: uploads.length, icon: Upload, color: 'text-violet-400', bg: 'bg-violet-500/20', border: 'border-violet-500/30', trend: `${formatBytes(totalStorage)} total` },
+    { title: 'Active Today', value: activeUsers, icon: Activity, color: 'text-cyan-400', bg: 'bg-cyan-500/20', border: 'border-cyan-500/30', trend: 'last 24 hours' },
+    { title: 'Storage Used', value: formatBytes(totalStorage), icon: HardDrive, color: 'text-pink-400', bg: 'bg-pink-500/20', border: 'border-pink-500/30', trend: `${uploads.length} files` },
+  ];
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-4"></div>
-          <p className="text-neutral-400">Loading admin dashboard...</p>
+      <div className="flex items-center justify-center py-16">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent mx-auto" />
+          <p className="text-slate-400">Loading admin data from Firebase...</p>
         </div>
       </div>
     );
   }
-
-  const statCards = [
-    {
-      title: 'Total Users',
-      value: stats?.totalUsers.toLocaleString() || '0',
-      icon: Users,
-      color: 'text-white',
-      bgColor: 'bg-white/10',
-      trend: '+12% this month'
-    },
-    {
-      title: 'Total Uploads',
-      value: stats?.totalUploads.toLocaleString() || '0',
-      icon: Upload,
-      color: 'text-white',
-      bgColor: 'bg-white/10',
-      trend: '+8% this week'
-    },
-    {
-      title: 'Active Users (24h)',
-      value: stats?.activeUsers.toLocaleString() || '0',
-      icon: Activity,
-      color: 'text-white',
-      bgColor: 'bg-white/10',
-      trend: '68% of total users'
-    },
-    {
-      title: 'Storage Used',
-      value: `${stats?.storageUsed || 0} GB`,
-      icon: HardDrive,
-      color: 'text-white',
-      bgColor: 'bg-white/10',
-      trend: 'of 100 GB limit'
-    }
-  ];
-
-  const chartDistribution = adminService.getChartTypeDistribution();
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-          <p className="text-gray-400">Monitor platform activity and manage users</p>
+          <h1 className="text-2xl font-bold gradient-text">Admin Dashboard</h1>
+          <p className="text-slate-400">Real-time data from Firebase Firestore</p>
         </div>
         <div className="flex items-center space-x-4">
-          <Button
-            variant="outline"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center space-x-2"
-          >
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing} className="flex items-center space-x-2">
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </Button>
           <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-white" />
-            <span className="text-sm font-medium text-white">Admin Access</span>
+            <Shield className="w-5 h-5 text-indigo-400" />
+            <span className="text-sm font-medium text-indigo-400">Admin Access</span>
           </div>
         </div>
       </div>
@@ -359,38 +157,52 @@ export const AdminDashboard: React.FC = () => {
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <CheckCircle className="w-5 h-5 text-white" />
-              <span className="text-white font-medium">System Status: Operational</span>
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
+              <span className="text-white font-medium">Firebase Connected — System Operational</span>
             </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-4 text-sm text-slate-400">
               <div className="flex items-center space-x-1">
-                <Database className="w-4 h-4" />
-                <span>Database: Online</span>
+                <Database className="w-4 h-4 text-indigo-400" />
+                <span>Firestore: Online</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="w-4 h-4" />
-                <span>Last updated: {new Date().toLocaleTimeString()}</span>
+                <span>Updated: {new Date().toLocaleTimeString()}</span>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Admin Access Info */}
+      <Card className="border-indigo-500/40 bg-indigo-500/5">
+        <CardContent className="p-4">
+          <div className="flex items-start space-x-3">
+            <Shield className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm">
+              <p className="text-white font-semibold mb-1">🔐 Admin Panel Access</p>
+              <p className="text-slate-400">The Admin tab is visible only to users with <code className="bg-indigo-500/20 text-indigo-300 px-1 rounded">role: "admin"</code> in Firestore.</p>
+              <p className="text-slate-400 mt-1">To promote a user to admin: Go to <strong className="text-white">Users</strong> tab → click the <Shield className="w-3 h-3 inline text-indigo-400" /> button next to any user. The email <code className="bg-indigo-500/20 text-indigo-300 px-1 rounded">vansh6dec@gmail.com</code> is automatically admin on first login.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Tabs */}
-      <div className="border-b border-white/20">
+      <div className="border-b border-indigo-500/20">
         <nav className="-mb-px flex space-x-8">
           {[
             { id: 'overview', label: 'Overview', icon: TrendingUp },
-            { id: 'users', label: 'Users', icon: Users },
-            { id: 'activity', label: 'Activity', icon: Activity }
+            { id: 'users', label: `Users (${users.length})`, icon: Users },
+            { id: 'uploads', label: `Uploads (${uploads.length})`, icon: Upload },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setSelectedTab(tab.id as 'overview' | 'users' | 'activity')}
+              onClick={() => setSelectedTab(tab.id as typeof selectedTab)}
               className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 selectedTab === tab.id
-                  ? 'border-white text-white'
-                  : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                  ? 'border-indigo-400 text-indigo-400'
+                  : 'border-transparent text-slate-400 hover:text-slate-300'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -400,24 +212,21 @@ export const AdminDashboard: React.FC = () => {
         </nav>
       </div>
 
-      {/* Overview Tab */}
+      {/* Overview */}
       {selectedTab === 'overview' && (
         <div className="space-y-6">
-          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {statCards.map((stat, index) => (
-              <Card key={index}>
+            {statCards.map((stat, i) => (
+              <Card key={i}>
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                        <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-400">{stat.title}</p>
-                        <p className="text-2xl font-bold text-white">{stat.value}</p>
-                        <p className="text-xs text-gray-500">{stat.trend}</p>
-                      </div>
+                  <div className="flex items-center space-x-4">
+                    <div className={`p-3 rounded-xl ${stat.bg} border ${stat.border}`}>
+                      <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                    </div>
+                    <div>
+                      <p className="text-sm text-slate-400">{stat.title}</p>
+                      <p className="text-2xl font-bold text-white">{stat.value}</p>
+                      <p className="text-xs text-slate-500">{stat.trend}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -425,62 +234,26 @@ export const AdminDashboard: React.FC = () => {
             ))}
           </div>
 
-          {/* Chart Usage */}
+          {/* Recent Uploads */}
           <Card>
             <CardHeader>
-              <CardTitle>Chart Type Usage Distribution</CardTitle>
+              <CardTitle>Recent File Uploads</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {chartDistribution.map((chart, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className="w-32 text-sm font-medium text-gray-300">{chart.type}</div>
-                    <div className="flex-1 mx-4">
-                      <div className="w-full bg-gray-700 rounded-full h-3">
-                        <div
-                          className="h-3 rounded-full bg-white"
-                          style={{ width: `${chart.percentage}%` }}
-                        />
+              <div className="space-y-3">
+                {uploads.slice(0, 5).map((upload) => (
+                  <div key={upload.id} className="flex items-center justify-between p-3 bg-indigo-500/5 rounded-lg border border-indigo-500/10">
+                    <div className="flex items-center space-x-3">
+                      <File className="w-8 h-8 text-indigo-400" />
+                      <div>
+                        <p className="font-medium text-white text-sm">{upload.fileName}</p>
+                        <p className="text-xs text-slate-400">{upload.userEmail} · {upload.rows} rows · {formatBytes(upload.fileSize)}</p>
                       </div>
                     </div>
-                    <div className="w-16 text-sm text-gray-400 text-right">
-                      {chart.count} ({chart.percentage}%)
-                    </div>
+                    <span className="text-xs text-slate-500">{formatDistanceToNow(toDate(upload.uploadDate), { addSuffix: true })}</span>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Platform Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <div className="text-2xl font-bold text-white">
-                    {stats?.recentActivity.filter(a => 
-                      Date.now() - a.uploadDate.getTime() < 24 * 60 * 60 * 1000
-                    ).length}
-                  </div>
-                  <div className="text-sm text-gray-400">Uploads Today</div>
-                </div>
-                <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <div className="text-2xl font-bold text-white">
-                    {users.filter(u => u.lastLogin && 
-                      Date.now() - u.lastLogin.getTime() < 60 * 60 * 1000
-                    ).length}
-                  </div>
-                  <div className="text-sm text-gray-400">Active This Hour</div>
-                </div>
-                <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <div className="text-2xl font-bold text-white">
-                    {Math.round((stats?.storageUsed || 0) / 100 * 100)}%
-                  </div>
-                  <div className="text-sm text-gray-400">Storage Usage</div>
-                </div>
+                {uploads.length === 0 && <p className="text-slate-500 text-sm text-center py-4">No uploads yet</p>}
               </div>
             </CardContent>
           </Card>
@@ -491,92 +264,49 @@ export const AdminDashboard: React.FC = () => {
       {selectedTab === 'users' && (
         <Card>
           <CardHeader>
-            <CardTitle>User Management</CardTitle>
-            <p className="text-sm text-gray-400">
-              Manage user accounts, roles, and permissions
-            </p>
+            <CardTitle>User Management — Firebase Auth + Firestore</CardTitle>
+            <p className="text-sm text-slate-400">All registered users from Firestore /users collection</p>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/20">
-                    <th className="text-left py-3 px-4 font-medium text-gray-400">User</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-400">Role</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-400">Created</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-400">Last Login</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-400">Status</th>
-                    <th className="text-right py-3 px-4 font-medium text-gray-400">Actions</th>
+                  <tr className="border-b border-indigo-500/20">
+                    {['User', 'Role', 'Joined', 'Last Login', 'Status', 'Actions'].map(h => (
+                      <th key={h} className="text-left py-3 px-4 font-medium text-slate-400">{h}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => {
-                    const isOnline = user.lastLogin && 
-                      (Date.now() - user.lastLogin.getTime()) < 30 * 60 * 1000; // 30 minutes
-                    
+                    const isOnline = Date.now() - toDate(user.lastLogin).getTime() < 30 * 60 * 1000;
                     return (
-                      <tr key={user.id} className="border-b border-white/10 hover:bg-white/5">
+                      <tr key={user.id} className="border-b border-indigo-500/10 hover:bg-indigo-500/5 transition-colors">
                         <td className="py-3 px-4">
                           <div>
-                            <div className="font-medium text-white">{user.name}</div>
-                            <div className="text-gray-400">{user.email}</div>
+                            <p className="font-medium text-white">{user.name}</p>
+                            <p className="text-slate-400 text-xs">{user.email}</p>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.role === 'admin' 
-                              ? 'bg-white/20 text-white' 
-                              : 'bg-neutral-500/20 text-neutral-400'
-                          }`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-slate-500/20 text-slate-400'}`}>
                             {user.role}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-gray-300">
-                          {formatDistanceToNow(user.createdAt, { addSuffix: true })}
-                        </td>
-                        <td className="py-3 px-4 text-gray-300">
-                          {user.lastLogin 
-                            ? formatDistanceToNow(user.lastLogin, { addSuffix: true })
-                            : 'Never'
-                          }
-                        </td>
+                        <td className="py-3 px-4 text-slate-400 text-xs">{formatDistanceToNow(toDate(user.createdAt), { addSuffix: true })}</td>
+                        <td className="py-3 px-4 text-slate-400 text-xs">{formatDistanceToNow(toDate(user.lastLogin), { addSuffix: true })}</td>
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                              isOnline ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'bg-neutral-500'
-                            }`} />
-                            <span className={`text-xs ${
-                              isOnline ? 'text-white' : 'text-neutral-500'
-                            }`}>
-                              {isOnline ? 'Online' : 'Offline'}
-                            </span>
+                            <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]' : 'bg-slate-600'}`} />
+                            <span className={`text-xs ${isOnline ? 'text-emerald-400' : 'text-slate-500'}`}>{isOnline ? 'Online' : 'Offline'}</span>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="flex items-center justify-end space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUserAction(user.id, 'promote')}
-                              title={user.role === 'admin' ? 'Demote to user' : 'Promote to admin'}
-                            >
+                          <div className="flex items-center space-x-2">
+                            <Button variant="outline" size="sm" onClick={() => handlePromote(user.id, user.role)} title={user.role === 'admin' ? 'Demote to user' : 'Promote to admin'}>
                               <Shield className="w-4 h-4" />
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUserAction(user.id, 'block')}
-                              title="Block user"
-                            >
-                              <UserX className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUserAction(user.id, 'delete')}
-                              className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
-                              title="Delete user"
-                            >
+                            <Button variant="danger" size="sm" onClick={() => handleDeleteUser(user.id, user.name)} title="Delete user">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -586,55 +316,49 @@ export const AdminDashboard: React.FC = () => {
                   })}
                 </tbody>
               </table>
+              {users.length === 0 && <p className="text-center text-slate-500 py-8">No users registered yet</p>}
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Activity Tab */}
-      {selectedTab === 'activity' && (
+      {/* Uploads Tab */}
+      {selectedTab === 'uploads' && (
         <Card>
           <CardHeader>
-            <CardTitle>Recent Platform Activity</CardTitle>
-            <p className="text-sm text-gray-400">
-              Monitor user uploads and chart creation activity
-            </p>
+            <CardTitle>File Upload History — Firebase Storage + Firestore</CardTitle>
+            <p className="text-sm text-slate-400">All uploaded files from Firestore /uploads collection</p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {stats?.recentActivity.map((activity) => {
-                const user = users.find(u => u.id === activity.userId);
-                return (
-                  <div
-                    key={activity.id}
-                    className="flex items-center justify-between p-4 border border-white/20 rounded-lg hover:bg-white/5 transition-colors"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <BarChart3 className="w-8 h-8 text-white" />
-                      <div>
-                        <h4 className="font-medium text-white">{activity.fileName}</h4>
-                        <p className="text-sm text-gray-400">
-                          {activity.chartType.charAt(0).toUpperCase() + activity.chartType.slice(1)} chart: {activity.xAxis} vs {activity.yAxis}
-                        </p>
-                        <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span>By: {user?.name || 'Unknown User'}</span>
-                          <span>{formatDistanceToNow(activity.uploadDate, { addSuffix: true })}</span>
-                        </div>
-                      </div>
+            <div className="space-y-3">
+              {uploads.map((upload) => (
+                <div key={upload.id} className="flex items-center justify-between p-4 glass rounded-xl border-indigo-500/20 hover:border-indigo-500/40 transition-colors">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
+                      <BarChart3 className="w-6 h-6 text-indigo-400" />
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => toast.info('View feature coming soon')}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
+                    <div>
+                      <p className="font-medium text-white">{upload.fileName}</p>
+                      <p className="text-sm text-slate-400">{upload.userEmail} · {upload.rows?.toLocaleString()} rows · {upload.columns} cols · {formatBytes(upload.fileSize)}</p>
+                      <p className="text-xs text-slate-500">{formatDistanceToNow(toDate(upload.uploadDate), { addSuffix: true })}</p>
                     </div>
                   </div>
-                );
-              })}
+                  <div className="flex items-center space-x-2">
+                    {upload.storageUrl && (
+                      <Button variant="outline" size="sm" onClick={() => window.open(upload.storageUrl, '_blank')} title="Download file">
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    )}
+                    <Button variant="outline" size="sm" onClick={() => toast.info(`Dataset ID: ${upload.datasetId}`)} title="View details">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => handleDeleteUpload(upload.id, upload.fileName)} title="Delete record">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {uploads.length === 0 && <p className="text-center text-slate-500 py-8">No files uploaded yet</p>}
             </div>
           </CardContent>
         </Card>

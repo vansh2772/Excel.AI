@@ -59,23 +59,24 @@ const AppContent: React.FC = () => {
         toastOptions={{
           duration: 4000,
           style: {
-            background: 'rgba(17, 24, 39, 0.95)',
-            color: '#fff',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            backdropFilter: 'blur(10px)',
+            background: 'rgba(18, 18, 42, 0.95)',
+            color: '#e2e8f0',
+            border: '1px solid rgba(99, 102, 241, 0.4)',
+            backdropFilter: 'blur(16px)',
+            fontFamily: 'Inter, sans-serif',
           },
           success: {
             duration: 3000,
             iconTheme: {
-              primary: '#ffffff',
-              secondary: '#000',
+              primary: '#6366f1',
+              secondary: '#fff',
             },
           },
           error: {
             duration: 4000,
             iconTheme: {
-              primary: '#ffffff',
-              secondary: '#000',
+              primary: '#f43f5e',
+              secondary: '#fff',
             },
           },
         }}

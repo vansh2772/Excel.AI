@@ -1,6 +1,25 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  User as FirebaseUser,
+} from 'firebase/auth';
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { auth, db } from '../services/firebase';
 import { User, AuthState } from '../types';
-import { googleAuthService, GoogleUser } from '../services/googleAuth';
+
+const ADMIN_EMAILS = ['vansh6dec@gmail.com'];
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
@@ -11,185 +30,94 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-type AuthAction = 
-  | { type: 'LOGIN_START' }
-  | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
-  | { type: 'LOGIN_FAILURE' }
-  | { type: 'LOGOUT' }
-  | { type: 'SET_LOADING'; payload: boolean };
+async function syncUserToFirestore(firebaseUser: FirebaseUser, name?: string): Promise<User> {
+  const userRef = doc(db, 'users', firebaseUser.uid);
+  const userSnap = await getDoc(userRef);
+  const isAdmin = ADMIN_EMAILS.includes(firebaseUser.email || '');
+  const role: 'user' | 'admin' = isAdmin ? 'admin' : (userSnap.exists() ? userSnap.data().role || 'user' : 'user');
 
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case 'LOGIN_START':
-      return { ...state, loading: true };
-    case 'LOGIN_SUCCESS':
-      return {
-        ...state,
-        user: action.payload.user,
-        token: action.payload.token,
-        isAuthenticated: true,
-        loading: false
-      };
-    case 'LOGIN_FAILURE':
-      return {
-        ...state,
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        loading: false
-      };
-    case 'LOGOUT':
-      return {
-        ...state,
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        loading: false
-      };
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload };
-    default:
-      return state;
+  if (!userSnap.exists()) {
+    const data = {
+      email: firebaseUser.email || '',
+      name: name || firebaseUser.displayName || (firebaseUser.email?.split('@')[0] ?? 'User'),
+      role,
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+      photoURL: firebaseUser.photoURL || null,
+    };
+    await setDoc(userRef, data);
+  } else {
+    await updateDoc(userRef, { lastLogin: serverTimestamp() });
   }
-};
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  loading: false
-};
+  const snap = await getDoc(userRef);
+  return {
+    id: firebaseUser.uid,
+    email: firebaseUser.email || '',
+    name: snap.data()?.name || firebaseUser.displayName || 'User',
+    role: snap.data()?.role || role,
+    createdAt: snap.data()?.createdAt?.toDate?.() || new Date(),
+    lastLogin: new Date(),
+    picture: firebaseUser.photoURL || undefined,
+  };
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      // Check for existing session
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('user');
-      
-      if (token && userData) {
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
         try {
-          const user = JSON.parse(userData);
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-        } catch {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          const appUser = await syncUserToFirestore(firebaseUser);
+          const idToken = await firebaseUser.getIdToken();
+          setUser(appUser);
+          setToken(idToken);
+        } catch (e) {
+          console.error('Auth state sync error:', e);
         }
+      } else {
+        setUser(null);
+        setToken(null);
       }
-
-      // Initialize Google Auth
-      try {
-        await googleAuthService.initializeGoogleAuth();
-      } catch (error) {
-        console.error('Failed to initialize Google Auth:', error);
-      }
-    };
-
-    initializeAuth();
+      setLoading(false);
+    });
+    return unsub;
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const login = async (email: string, _password: string) => {
-    dispatch({ type: 'LOGIN_START' });
-    
-    try {
-      // Simulate API call - replace with actual authentication
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock user data - replace with actual API response
-      const user: User = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        role: email.includes('admin') ? 'admin' : 'user',
-        createdAt: new Date(),
-        lastLogin: new Date()
-      };
-      
-      const token = 'mock-jwt-token-' + Date.now();
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-    } catch {
-      dispatch({ type: 'LOGIN_FAILURE' });
-      throw new Error('Login failed');
-    }
+  const login = async (email: string, password: string) => {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const appUser = await syncUserToFirestore(cred.user);
+    setUser(appUser);
+  };
+
+  const register = async (email: string, password: string, name: string) => {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: name });
+    const appUser = await syncUserToFirestore(cred.user, name);
+    setUser(appUser);
   };
 
   const loginWithGoogle = async () => {
-    dispatch({ type: 'LOGIN_START' });
-    
-    try {
-      const googleUser: GoogleUser = await googleAuthService.signInWithGoogle();
-      
-      // Convert Google user to our User type
-      const user: User = {
-        id: googleUser.id,
-        email: googleUser.email,
-        name: googleUser.name,
-        role: 'user', // Default role for Google users
-        createdAt: new Date(),
-        lastLogin: new Date(),
-        picture: googleUser.picture
-      };
-      
-      const token = 'google-jwt-token-' + Date.now();
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-    } catch {
-      dispatch({ type: 'LOGIN_FAILURE' });
-      throw new Error('Google login failed');
-    }
+    const provider = new GoogleAuthProvider();
+    const cred = await signInWithPopup(auth, provider);
+    const appUser = await syncUserToFirestore(cred.user);
+    setUser(appUser);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const register = async (email: string, _password: string, name: string) => {
-    dispatch({ type: 'LOGIN_START' });
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const user: User = {
-        id: Date.now().toString(),
-        email,
-        name,
-        role: 'user',
-        createdAt: new Date()
-      };
-      
-      const token = 'mock-jwt-token-' + Date.now();
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-    } catch {
-      dispatch({ type: 'LOGIN_FAILURE' });
-      throw new Error('Registration failed');
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    dispatch({ type: 'LOGOUT' });
+  const logout = async () => {
+    await signOut(auth);
+    setUser(null);
+    setToken(null);
   };
 
   return (
     <AuthContext.Provider value={{
-      ...state,
-      login,
-      loginWithGoogle,
-      logout,
-      register
+      user, token, loading,
+      isAuthenticated: !!user,
+      login, register, loginWithGoogle, logout,
     }}>
       {children}
     </AuthContext.Provider>
@@ -198,9 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };
