@@ -48,20 +48,10 @@ export const useDataStore = () => {
 
       const analyticsData = calculateStatistics(processedData);
 
-      // --- Firebase Storage (Optional/Free Tier Fallback) ---
+      // --- Firebase Storage (Skipped to prevent CORS errors on Free Plan) ---
       let storageUrl = '';
-      const storageDisabled = import.meta.env.VITE_DISABLE_STORAGE === 'true';
-
-      if (storage && !storageDisabled) {
-        try {
-          const uid = auth.currentUser?.uid || 'anonymous';
-          const storageRef = ref(storage, `uploads/${uid}/${Date.now()}_${file.name}`);
-          const snapshot = await uploadBytes(storageRef, file);
-          storageUrl = await getDownloadURL(snapshot.ref);
-        } catch (storageErr) {
-          console.warn('Storage upload skipped (Spark Plan or CORS). Use VITE_DISABLE_STORAGE=true to hide this.');
-        }
-      }
+      // To enable storage, you must configure CORS via Google Cloud Shell.
+      // For now, we use local processing to keep the console clean.
 
       // --- Firestore Metadata (Database - Always Works) ---
       try {
