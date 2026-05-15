@@ -1,423 +1,267 @@
-# 🚀 Excel.AI Platform
+<div align="center">
 
-A cutting-edge, AI-powered Excel and CSV analytics platform that transforms raw data into actionable insights through intelligent visualizations and natural language interactions.
+# ✨ Excel.AI Platform
 
-**🌐 Live Demo:** [https://excelaivansh.netlify.app/](https://excelaivansh.netlify.app/)
+### AI-Powered Data Analytics & Visualization
+
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-excelaivansh.netlify.app-6366f1?style=for-the-badge)](https://excelaivansh.netlify.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-vansh2772%2FExcel.AI-181717?style=for-the-badge&logo=github)](https://github.com/vansh2772/Excel.AI)
+[![Netlify](https://img.shields.io/badge/Deployed_on-Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://excelaivansh.netlify.app/)
+[![Firebase](https://img.shields.io/badge/Database-Firebase-FFCA28?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
+
+<br/>
+
+> Transform your Excel & CSV files into stunning AI-powered insights with interactive charts, intelligent chat, and a real-time admin dashboard — all in your browser.
+
+<br/>
+
+![Tech Stack](https://skillicons.dev/icons?i=react,typescript,vite,tailwind,firebase&theme=dark)
+
+</div>
+
+---
+
+## 🖥️ Live Demo
+
+**🌐 [https://excelaivansh.netlify.app/](https://excelaivansh.netlify.app/)**
+
+> Login with Google or register with email/password to get started instantly.
+
+---
+
+## 🔐 Admin Panel Access
+
+The platform includes a full-featured **Admin Dashboard** backed by Firebase Firestore.
+
+| Step | Action |
+|------|--------|
+| 1 | Login with **`vansh6dec@gmail.com`** (Google or email) |
+| 2 | The **Admin** tab appears automatically in the Dashboard |
+| 3 | View all users, manage roles, and browse uploaded files in real-time |
+
+**To promote any user to admin:**
+- Go to **Admin → Users tab** → click the 🛡️ **Shield** icon next to any user
+- Role changes are saved to Firestore instantly
+
+---
 
 ## ✨ Key Features
 
 ### 🤖 AI-Powered Analytics
-- **Intelligent Chat Assistant**: Upload files and get instant insights through natural language
-- **Smart Chart Recommendations**: AI suggests the best visualization based on your data
-- **Automated Data Analysis**: Generate comprehensive insights automatically
-- **Contextual Assistance**: Get help specific to your dataset
+- **Intelligent Chat Assistant** — Upload files & get instant AI insights via natural language
+- **Smart Chart Recommendations** — AI suggests the best visualization for your data
+- **Automated Data Analysis** — Generate comprehensive insights automatically
+- **Contextual Help** — Ask questions about your specific dataset
 
 ### 📊 Advanced Visualizations
-- **2D Charts**: Bar, Line, Pie, Scatter, Area charts with Chart.js
-- **3D Visualizations**: Interactive 3D bar charts and scatter plots with Three.js
-- **Real-time Rendering**: Smooth, responsive chart updates
-- **Export Options**: Download charts as PNG or PDF
+- **2D Charts** — Bar, Line, Pie, Scatter, Area (powered by Chart.js & Recharts)
+- **3D Visualizations** — Interactive 3D bar charts & scatter plots (Three.js)
+- **Real-time Rendering** — Smooth, responsive chart updates
+- **Export** — Download charts as PNG or PDF
+
+### 🔐 Firebase Authentication & Database
+- **Google OAuth** — One-click sign-in with Google
+- **Email/Password** — Traditional registration & login
+- **Firestore** — Real-time database for user profiles & upload metadata
+- **Firebase Storage** — Actual Excel/CSV files stored in the cloud
+- **Role-based Access** — User and Admin roles, managed from the dashboard
+
+### 🛡️ Admin Dashboard
+- **Live User Management** — See all registered users from Firestore
+- **Upload History** — View every file uploaded across all users
+- **Real Stats** — Live counts, storage usage, active users
+- **Admin Actions** — Promote/demote roles, delete users & file records
+- **Download Files** — Direct links to files stored in Firebase Storage
 
 ### 📁 Robust Data Processing
-- **Multi-format Support**: Excel (.xlsx, .xls) and CSV files
-- **Large Dataset Handling**: Up to 100MB files, 100K rows
-- **Smart Data Detection**: Automatic type inference and validation
-- **Statistical Analysis**: Mean, median, mode, standard deviation, and more
+- **Multi-format** — Excel (`.xlsx`, `.xls`) and CSV files
+- **Large Datasets** — Up to 100MB, 100,000 rows
+- **Smart Detection** — Automatic type inference & validation
+- **Statistical Analysis** — Mean, median, mode, std deviation, and more
 
-### 🔐 Enterprise-Ready Security
-- **Multi-auth Support**: Email/password and Google OAuth
-- **Role-based Access**: User and Admin roles with different permissions
-- **Data Validation**: Comprehensive input sanitization and validation
-- **Secure File Processing**: Safe handling of uploaded files
-
-### 📈 Professional Features
-- **Analysis History**: Track and revisit previous analyses
-- **Admin Dashboard**: User management and platform analytics
-- **Data Export**: CSV export with custom formatting
-- **Responsive Design**: Perfect on desktop, tablet, and mobile
+---
 
 ## 🛠️ Technology Stack
 
-### Frontend
-- **React 18** - Modern React with hooks and concurrent features
-- **TypeScript** - Type-safe development with excellent IDE support
-- **Tailwind CSS** - Utility-first CSS framework for rapid styling
-- **Vite** - Lightning-fast build tool and development server
+| Layer | Technology |
+|-------|-----------|
+| **Frontend Framework** | React 18 + TypeScript |
+| **Build Tool** | Vite |
+| **Styling** | Tailwind CSS (Deep Space theme) |
+| **Authentication** | Firebase Auth (Google + Email) |
+| **Database** | Firebase Firestore |
+| **File Storage** | Firebase Storage |
+| **2D Charts** | Chart.js + Recharts |
+| **3D Charts** | Three.js + @react-three/fiber |
+| **AI / Insights** | Google Generative AI (Gemini) |
+| **File Parsing** | Papa Parse (CSV) + SheetJS (Excel) |
+| **Notifications** | React Hot Toast |
+| **Deployment** | Netlify |
 
-### Data & Visualization
-- **Chart.js** - Powerful 2D charting library
-- **Three.js** - 3D graphics and interactive visualizations
-- **Papa Parse** - Fast CSV parsing with error handling
-- **SheetJS (xlsx)** - Excel file processing and manipulation
+---
 
-### AI & Services
-- **Google Generative AI** - Advanced AI insights with Gemini model
-- **Google OAuth** - Secure authentication integration
-- **React Hot Toast** - Beautiful notification system
-
-### Development Tools
-- **ESLint** - Code quality and consistency
-- **TypeScript** - Static type checking
-- **PostCSS** - CSS processing and optimization
-
-## 🚀 Quick Start Guide
+## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js 18+** and npm
-- **Google Cloud Console** account (for OAuth and AI features)
+- **Node.js 18+**
+- **Firebase project** (free Spark plan works)
+- **Google Cloud Console** account (for OAuth)
 
-### 1. Installation
+### 1. Clone & Install
 ```bash
-# Clone the repository
-git clone <your-repository-url>
-cd excel-analytics-platform
-
-# Install dependencies
+git clone https://github.com/vansh2772/Excel.AI.git
+cd Excel.AI
 npm install
 ```
-### 2. .env set
 
-// Google OAuth Configuration
-VITE_GOOGLE_CLIENT_ID=..... .... ..... ....
+### 2. Set Up Environment Variables
+Create a `.env` file in the project root:
+```env
+# Google OAuth
+VITE_GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
 
-// Google AI Configuration  
-VITE_GOOGLE_AI_API_KEY=..... .... ..... ....
+# Google AI (optional — enables AI chat features)
+VITE_GOOGLE_AI_API_KEY=your_gemini_api_key
 
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+```
 
-### 3. Google Services Setup
+### 3. Firebase Setup (5 minutes)
+1. Go to [console.firebase.google.com](https://console.firebase.google.com)
+2. Create a project → Add a **Web App** → copy the config
+3. Enable **Authentication** → Sign-in Methods → **Email/Password** + **Google**
+4. Create **Firestore Database** → Start in production mode
+5. Enable **Storage**
+6. Apply Firestore rules from `firestore.rules` in this repo
 
-#### Google OAuth Configuration
+### 4. Google OAuth Setup
 1. Visit [Google Cloud Console](https://console.cloud.google.com)
-2. Create a new project or select existing
-3. Enable **Google+ API** or **Google Identity API**
-4. Navigate to **Credentials** → **Create Credentials** → **OAuth 2.0 Client ID**
-5. Select **Web application**
-6. Add these **Authorized JavaScript origins**:
+2. Go to **Credentials → OAuth 2.0 Client IDs**
+3. Add **Authorized JavaScript Origins**:
    ```
    http://localhost:5173
-   https://localhost:5173
-   http://localhost:5174
-   https://localhost:5174
-   https://yourdomain.com (for production)
+   https://your-netlify-site.netlify.app
    ```
-7. Copy the Client ID (ends with `.googleusercontent.com`)
 
-#### Google AI Setup (Optional but Recommended)
-1. In Google Cloud Console, enable **Generative AI API**
-2. Create an **API key** in Credentials
-3. Copy the API key for enhanced AI features
-
-### 4. Environment Variables
-Update your `.env` file:
-```env
-# Required for Google OAuth
-VITE_GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
-
-# Optional for enhanced AI features
-VITE_GOOGLE_AI_API_KEY=your_google_ai_api_key_here
-
-# Future features
-VITE_GITHUB_CLIENT_ID=your_github_client_id_here
-```
-
-### 5. Launch Application
+### 5. Run Locally
 ```bash
-# Start development server
 npm run dev
-
-# Open browser to http://localhost:5173
+# → http://localhost:5173
 ```
 
-## 📁 Project Architecture
+---
+
+## 📁 Project Structure
 
 ```
 src/
-├── components/              # React components
-│   ├── auth/               # Authentication (Login, Register, OAuth)
-│   ├── charts/             # Visualization components
-│   │   ├── AdvancedChartSelector.tsx
-│   │   ├── AdvancedDataVisualization.tsx
-│   │   ├── Chart3D.tsx
-│   │   └── SmartChartRecommendations.tsx
-│   ├── chat/               # AI chat assistant
-│   │   ├── ChatBot.tsx
-│   │   └── ChatBotToggle.tsx
-│   ├── admin/              # Admin dashboard
-│   ├── history/            # Analysis history
-│   ├── layout/             # Layout components
-│   └── ui/                 # Reusable UI components
-├── contexts/               # React contexts
-│   ├── AuthContext.tsx     # Authentication state
-│   └── ThemeContext.tsx    # Theme management
-├── hooks/                  # Custom React hooks
-│   └── useDataStore.ts     # Data management
-├── pages/                  # Page components
-│   ├── AuthPage.tsx        # Login/Register page
-│   └── Dashboard.tsx       # Main dashboard
-├── services/               # External integrations
-│   ├── aiService.ts        # Google AI integration
-│   └── googleAuth.ts       # OAuth service
-├── types/                  # TypeScript definitions
-├── utils/                  # Utility functions
-│   ├── dataProcessing.ts   # Data analysis utilities
-│   ├── fileProcessing.ts   # File handling
-│   └── chartExport.ts      # Export functionality
-└── main.tsx               # Application entry point
+├── components/
+│   ├── admin/              # AdminDashboard (Firestore-backed)
+│   ├── auth/               # LoginForm, RegisterForm, GoogleAuthButton
+│   ├── charts/             # AdvancedChartSelector, Chart3D, SmartChartRecommendations
+│   ├── chat/               # AI ChatBot + toggle
+│   ├── history/            # AnalysisHistory
+│   ├── layout/             # Header, Footer
+│   └── ui/                 # Button, Card, LoadingSpinner
+├── contexts/
+│   └── AuthContext.tsx     # Firebase Auth state management
+├── hooks/
+│   └── useDataStore.ts     # File processing + Firestore upload saving
+├── pages/
+│   ├── AuthPage.tsx        # Login / Register page
+│   └── Dashboard.tsx       # Main app dashboard
+├── services/
+│   ├── firebase.ts         # Firebase app initialization
+│   ├── aiService.ts        # Google Gemini AI integration
+│   └── googleAuth.ts       # Legacy Google auth helpers
+├── types/                  # TypeScript type definitions
+└── utils/                  # dataProcessing, fileProcessing, chartExport
 ```
 
-## 🎯 Core Features Deep Dive
+---
 
-### AI-Powered Data Analysis
-The platform leverages Google's Gemini AI model to provide:
-- **Automated Insights**: Comprehensive data analysis with key findings
-- **Smart Recommendations**: Chart type suggestions based on data characteristics
-- **Natural Language Queries**: Ask questions about your data in plain English
-- **Contextual Help**: Assistance tailored to your specific dataset
+## 🚀 Deployment on Netlify
 
-### Advanced Visualization Engine
-- **Chart.js Integration**: Professional 2D charts with animations
-- **Three.js 3D Graphics**: Interactive 3D visualizations with orbit controls
-- **Responsive Design**: Charts adapt to all screen sizes
-- **Export Capabilities**: High-quality PNG and PDF downloads
+### Step 1 — Connect Repository
+Link your GitHub repo to Netlify. Build settings:
+- **Build command**: `npm run build`
+- **Publish directory**: `dist`
 
-### Robust Data Processing
-- **Multi-format Support**: Excel and CSV with automatic format detection
-- **Data Validation**: Comprehensive error checking and user feedback
-- **Statistical Analysis**: Complete statistical summaries for numeric data
-- **Performance Optimized**: Handles large datasets efficiently
+### Step 2 — Set Environment Variables
+In **Netlify → Site Settings → Environment Variables**, add all variables from your `.env` file.
 
-### Enterprise Security
-- **Authentication**: Multiple auth methods with secure token management
-- **Data Protection**: Input validation and XSS prevention
-- **Role Management**: Admin and user roles with appropriate permissions
-- **Secure File Handling**: Safe processing of uploaded files
+### Step 3 — Deploy
+Push to `main` branch — Netlify auto-deploys on every push.
 
-## 🔧 Configuration Options
+### Step 4 — Update OAuth Origins
+Add your Netlify domain to Google Cloud Console authorized origins.
 
-### File Upload Limits
-```typescript
-// Configurable in utils/fileProcessing.ts
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
-const MAX_ROWS = 100000;
-const MAX_COLUMNS = 100;
-const SUPPORTED_FORMATS = ['.xlsx', '.xls', '.csv'];
-```
+---
 
-### Chart Configuration
-```typescript
-// Customizable color schemes
-const colorSchemes = [
-  { name: 'Blue', colors: ['#3B82F6', '#1E40AF', '#60A5FA'] },
-  { name: 'Green', colors: ['#10B981', '#047857', '#34D399'] },
-  // Add custom schemes
-];
-```
+## 🔒 Firestore Security Rules
 
-### AI Service Configuration
-```typescript
-// Fallback responses when AI is not configured
-const ENABLE_AI_FALLBACKS = true;
-const AI_TIMEOUT = 10000; // 10 seconds
-```
+The `firestore.rules` file in this repo contains production-ready security rules:
 
-## 🚀 Deployment Guide
+- ✅ Users can only read/write their own profile
+- ✅ Users can only read their own uploads
+- ✅ Admins can read/write all users and uploads
+- ✅ Anyone authenticated can create an upload record
 
-### Build for Production
-```bash
-# Create optimized production build
-npm run build
+Apply these rules in **Firebase Console → Firestore → Rules**.
 
-# Preview production build locally
-npm run preview
-```
+---
 
-### Deploy to Netlify
-1. **Connect Repository**: Link your Git repository to Netlify
-2. **Build Settings**:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-3. **Environment Variables**: Add your environment variables in Netlify dashboard
-4. **Domain Configuration**: Update Google OAuth origins with your domain
+## 📊 Usage Guide
 
-### Deploy to Vercel
-1. **Import Project**: Connect your repository to Vercel
-2. **Environment Variables**: Add variables in project settings
-3. **Automatic Deployment**: Deploys on every push to main branch
+### Basic Workflow
+1. **Sign up** or **sign in with Google**
+2. **Upload** an Excel or CSV file (drag & drop)
+3. **Review** the data overview — stats, quality assessment
+4. **Visualize** — pick a chart type, configure axes
+5. **Chat** with the AI assistant for instant insights
+6. **Export** your charts as PNG or PDF
 
-### Deploy to Custom Server
-```bash
-# Build the project
-npm run build
+### Admin Workflow
+1. Login with an admin account
+2. Click the **Admin** tab in the dashboard
+3. **Overview** — see live user counts and recent uploads
+4. **Users** — manage roles, delete accounts
+5. **Uploads** — browse all files, download from Firebase Storage
 
-# Serve the dist folder with any static file server
-# Example with serve:
-npx serve dist -p 3000
-```
+---
 
-## 🧪 Development Workflow
+## 🔮 Roadmap
 
-### Available Scripts
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
-```
+- [ ] Real-time collaboration (multi-user editing)
+- [ ] Direct SQL database connectivity
+- [ ] Scheduled reports & email summaries
+- [ ] Custom dashboard sharing (public links)
+- [ ] Mobile-responsive native app (React Native)
+- [ ] PowerPoint & Word export
 
-### Code Quality Standards
-- **TypeScript**: Strict type checking enabled
-- **ESLint**: Comprehensive linting rules
-- **Component Architecture**: Modular, reusable components
-- **Error Boundaries**: Graceful error handling
-- **Performance**: Optimized rendering and data processing
+---
 
-### Testing Strategy
-```bash
-# Add testing framework (recommended)
-npm install --save-dev @testing-library/react @testing-library/jest-dom vitest
+## 📞 Contact
 
-# Run tests
-npm run test
-```
+**LinkedIn:** [Vansh Khandelwal](https://www.linkedin.com/in/vansh-khandelwal-122205324/)
 
-## 🔍 Troubleshooting Guide
+**GitHub:** [@vansh2772](https://github.com/vansh2772)
 
-### Common Issues & Solutions
+---
 
-#### Google OAuth Problems
-```
-Error: "NetworkError: Error retrieving a token"
-```
-**Solutions:**
-- Verify Client ID format (must end with `.googleusercontent.com`)
-- Check authorized JavaScript origins in Google Cloud Console
-- Ensure both `http://` and `https://` localhost URLs are added
-- Clear browser cache and cookies
+<div align="center">
 
-#### File Upload Issues
-```
-Error: "File processing failed"
-```
-**Solutions:**
-- Check file size (max 100MB)
-- Verify file format (.xlsx, .xls, .csv only)
-- Ensure file is not corrupted
-- Check for special characters in column names
+**Built with ❤️ using React, TypeScript, Firebase & Google AI**
 
-#### AI Features Not Working
-```
-Error: "AI service not configured"
-```
-**Solutions:**
-- Add `VITE_GOOGLE_AI_API_KEY` to `.env` file
-- Verify API key is valid and has proper permissions
-- Check Google Cloud Console billing and quotas
-- Fallback responses will work without AI configuration
+*Transform your data into insights with Excel.AI — where artificial intelligence meets data visualization.*
 
-#### 3D Charts Not Rendering
-```
-Error: "WebGL not supported"
-```
-**Solutions:**
-- Enable WebGL in browser settings
-- Update graphics drivers
-- Use a modern browser (Chrome, Firefox, Safari, Edge)
-- Fallback to 2D charts automatically provided
+[![Live Demo](https://img.shields.io/badge/Try_it_Live-6366f1?style=for-the-badge&logo=netlify&logoColor=white)](https://excelaivansh.netlify.app/)
 
-### Performance Optimization
-- **Large Files**: Process in chunks for better performance
-- **Memory Management**: Clear data when switching datasets
-- **Chart Rendering**: Limit data points for smooth animations
-- **Caching**: Browser caching for static assets
-
-## 📊 Usage Examples
-
-### Basic Data Analysis
-1. **Upload File**: Drag and drop Excel/CSV file
-2. **Review Overview**: Check data statistics and quality
-3. **Create Visualization**: Select chart type and axes
-4. **Get AI Insights**: Use chat assistant for analysis
-5. **Export Results**: Download charts and data
-
-### Advanced Features
-```typescript
-// Custom chart configuration
-const chartConfig = {
-  type: '3d-bar',
-  xAxis: 'Category',
-  yAxis: 'Sales',
-  title: 'Sales by Category',
-  colors: ['#3B82F6', '#10B981', '#F59E0B']
-};
-
-// AI-powered insights
-const insights = await aiService.generateInsights(dataContext);
-
-// Export functionality
-await exportChartAsPDF(chartRef.current, 'Sales Analysis');
-```
-
-## 🔮 Roadmap & Future Features
-
-### Planned Enhancements
-- **Real-time Collaboration**: Multi-user editing and sharing
-- **Advanced Analytics**: Machine learning insights and predictions
-- **Database Connectivity**: Direct connection to SQL databases
-- **API Integration**: RESTful API for external applications
-- **Mobile App**: Native iOS and Android applications
-- **Advanced Export**: PowerPoint and Word document generation
-
-### Community Features
-- **Template Gallery**: Pre-built analysis templates
-- **Plugin System**: Custom chart types and data sources
-- **Sharing Platform**: Public dashboard sharing
-- **Educational Content**: Tutorials and best practices
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-### Development Setup
-```bash
-# Fork the repository
-git clone https://github.com/yourusername/excel-analytics-platform.git
-
-# Create feature branch
-git checkout -b feature/amazing-feature
-
-# Make changes and commit
-git commit -m "Add amazing feature"
-
-# Push to branch
-git push origin feature/amazing-feature
-
-# Create Pull Request
-```
-
-### Contribution Guidelines
-- Follow TypeScript best practices
-- Add tests for new features
-- Update documentation
-- Follow existing code style
-- Write clear commit messages
-
-## 📄 License
-
-
-## 🙏 Acknowledgments
-
-- **Google Cloud Platform** - AI and authentication services
-- **Chart.js Community** - Excellent charting library
-- **Three.js Team** - Amazing 3D graphics framework
-- **React Team** - Powerful UI framework
-- **Tailwind CSS** - Beautiful utility-first CSS
-
-## 📞 Support & Contact
-
-
-Linkdein: https://www.linkedin.com/in/vansh-khandelwal-122205324/
-
-
-**Built with ❤️ using React, TypeScript, and cutting-edge web technologies.**
-
-*Transform your data into insights with Excel.AI Platform - where artificial intelligence meets data visualization.*
+</div>
