@@ -11,181 +11,118 @@ interface RegisterFormProps {
   onToggleMode: () => void;
 }
 
+const inputClass = 'w-full pl-10 pr-4 py-3 bg-indigo-500/10 border border-indigo-500/30 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400 transition-colors text-white placeholder-slate-500 outline-none';
+const labelClass = 'block text-sm font-medium text-slate-300 mb-1';
+
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onToggleMode }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState(false);
   const { register, loading } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      toast.error('Please fill in all fields');
-      return;
+      toast.error('Please fill in all fields'); return;
     }
-
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
+      toast.error('Passwords do not match'); return;
     }
-
     if (formData.password.length < 6) {
-      toast.error('Password must be at least 6 characters');
-      return;
+      toast.error('Password must be at least 6 characters'); return;
     }
-
     try {
       await register(formData.email, formData.password, formData.name);
-      toast.success('Account created successfully!');
-    } catch {
-      toast.error('Registration failed. Please try again.');
+      toast.success('Account created! Welcome to Excel.AI 🎉');
+    } catch (error: unknown) {
+      const code = (error as { code?: string })?.code;
+      if (code === 'auth/email-already-in-use') {
+        toast.error('Email already registered. Please sign in.');
+      } else if (code === 'auth/weak-password') {
+        toast.error('Password is too weak. Use at least 6 characters.');
+      } else {
+        toast.error('Registration failed. Please try again.');
+      }
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto bg-white/10 dark:bg-gray-900/50 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 shadow-2xl font-sans" aria-label="Register Form">
+    <Card className="w-full max-w-md mx-auto shadow-2xl shadow-indigo-900/40 font-sans">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold text-white">
-          Create Account
-        </CardTitle>
-        <p className="text-gray-300 dark:text-gray-400">Join our analytics platform</p>
+        <CardTitle className="text-2xl font-bold gradient-text">Create Account</CardTitle>
+        <p className="text-slate-400">Join the Excel.AI analytics platform</p>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Google Login Button */}
-        <div className="space-y-3">
-          <GoogleAuthButton mode="register" />
-        </div>
-        
-        {/* Divider */}
+      <CardContent className="space-y-5">
+        <GoogleAuthButton mode="register" />
+
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-white/20 dark:border-gray-700/50" />
+            <span className="w-full border-t border-indigo-500/30" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-transparent px-2 text-gray-400">Or continue with email</span>
+            <span className="bg-theme-card px-3 text-slate-500">Or register with email</span>
           </div>
         </div>
 
-        {/* Email/Password Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Full Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-1">
-              Full Name
-            </label>
+            <label htmlFor="name" className={labelClass}>Full Name</label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
-                placeholder="Enter your full name"
-                required
-              />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400" />
+              <input id="name" name="name" type="text" value={formData.name}
+                onChange={handleChange} className={inputClass} placeholder="Your full name" required />
             </div>
           </div>
 
+          {/* Email */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-1">
-              Email Address
-            </label>
+            <label htmlFor="reg-email" className={labelClass}>Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
-                placeholder="Enter your email"
-                required
-              />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400" />
+              <input id="reg-email" name="email" type="email" value={formData.email}
+                onChange={handleChange} className={inputClass} placeholder="Enter your email" required />
             </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-1">
-              Password
-            </label>
+            <label htmlFor="reg-password" className={labelClass}>Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full pl-10 pr-12 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
-                placeholder="Create a password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-              >
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400" />
+              <input id="reg-password" name="password" type={showPassword ? 'text' : 'password'}
+                value={formData.password} onChange={handleChange}
+                className={`${inputClass} pr-12`} placeholder="Min 6 characters" required />
+              <button type="button" onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-indigo-400 hover:text-indigo-300">
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
           </div>
 
+          {/* Confirm Password */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-1">
-              Confirm Password
-            </label>
+            <label htmlFor="confirmPassword" className={labelClass}>Confirm Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white/10 dark:bg-neutral-800/50 border border-white/20 dark:border-neutral-700/50 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-colors text-white placeholder-neutral-400 backdrop-blur-sm"
-                placeholder="Confirm your password"
-                required
-              />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-indigo-400" />
+              <input id="confirmPassword" name="confirmPassword" type="password"
+                value={formData.confirmPassword} onChange={handleChange}
+                className={inputClass} placeholder="Re-enter your password" required />
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-white text-black hover:bg-neutral-200 transition-colors shadow-lg"
-            disabled={loading}
-          >
-            {loading ? (
-              <div className="flex items-center space-x-2">
-                <LoadingSpinner size="sm" />
-                <span>Creating account...</span>
-              </div>
-            ) : (
-              'Create Account'
-            )}
+          <Button type="submit" variant="primary" className="w-full py-3" disabled={loading}>
+            {loading ? <><LoadingSpinner size="sm" /><span className="ml-2">Creating account...</span></> : 'Create Account'}
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-400">
+        <div className="text-center">
+          <p className="text-sm text-slate-400">
             Already have an account?{' '}
-            <button
-              onClick={onToggleMode}
-              className="text-white hover:text-neutral-300 font-medium transition-colors border-b border-white"
-            >
+            <button onClick={onToggleMode} className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
               Sign in
             </button>
           </p>
