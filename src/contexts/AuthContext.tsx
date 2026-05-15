@@ -30,35 +30,47 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-async function syncUserToFirestore(firebaseUser: FirebaseUser, name?: string): Promise<User> {
-  const userRef = doc(db, 'users', firebaseUser.uid);
-  const userSnap = await getDoc(userRef);
-  const isAdmin = ADMIN_EMAILS.includes(firebaseUser.email || '');
-  const role: 'user' | 'admin' = isAdmin ? 'admin' : (userSnap.exists() ? userSnap.data().role || 'user' : 'user');
+/** Safely map a Firebase user → our User type. Never throws — Firestore errors are swallowed. */
+async function buildAppUser(firebaseUser: FirebaseUser, displayName?: string): Promise<User> {
+  const isAdmin = ADMIN_EMAILS.includes(firebaseUser.email ?? '');
+  let role: 'user' | 'admin' = isAdmin ? 'admin' : 'user';
+  let createdAt = new Date();
 
-  if (!userSnap.exists()) {
-    const data = {
-      email: firebaseUser.email || '',
-      name: name || firebaseUser.displayName || (firebaseUser.email?.split('@')[0] ?? 'User'),
-      role,
-      createdAt: serverTimestamp(),
-      lastLogin: serverTimestamp(),
-      photoURL: firebaseUser.photoURL || null,
-    };
-    await setDoc(userRef, data);
-  } else {
-    await updateDoc(userRef, { lastLogin: serverTimestamp() });
+  // Try to sync Firestore — but don't block login if it fails
+  try {
+    const userRef = doc(db, 'users', firebaseUser.uid);
+    const snap = await getDoc(userRef);
+
+    if (snap.exists()) {
+      role = snap.data().role ?? role;
+      createdAt = snap.data().createdAt?.toDate?.() ?? createdAt;
+      // Update last login silently
+      updateDoc(userRef, { lastLogin: serverTimestamp() }).catch(() => {});
+    } else {
+      // Create profile document
+      const name = displayName || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User';
+      await setDoc(userRef, {
+        email: firebaseUser.email ?? '',
+        name,
+        role,
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+        photoURL: firebaseUser.photoURL ?? null,
+      });
+    }
+  } catch (err) {
+    // Firestore permissions not configured yet — still allow login
+    console.warn('Firestore sync skipped (check Firestore rules):', (err as Error).message);
   }
 
-  const snap = await getDoc(userRef);
   return {
     id: firebaseUser.uid,
-    email: firebaseUser.email || '',
-    name: snap.data()?.name || firebaseUser.displayName || 'User',
-    role: snap.data()?.role || role,
-    createdAt: snap.data()?.createdAt?.toDate?.() || new Date(),
+    email: firebaseUser.email ?? '',
+    name: displayName || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+    role,
+    createdAt,
     lastLogin: new Date(),
-    picture: firebaseUser.photoURL || undefined,
+    picture: firebaseUser.photoURL ?? undefined,
   };
 }
 
@@ -70,14 +82,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        try {
-          const appUser = await syncUserToFirestore(firebaseUser);
-          const idToken = await firebaseUser.getIdToken();
-          setUser(appUser);
-          setToken(idToken);
-        } catch (e) {
-          console.error('Auth state sync error:', e);
-        }
+        const appUser = await buildAppUser(firebaseUser);
+        const idToken = await firebaseUser.getIdToken().catch(() => null);
+        setUser(appUser);
+        setToken(idToken);
       } else {
         setUser(null);
         setToken(null);
@@ -89,21 +97,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    const appUser = await syncUserToFirestore(cred.user);
+    const appUser = await buildAppUser(cred.user);
     setUser(appUser);
   };
 
   const register = async (email: string, password: string, name: string) => {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(cred.user, { displayName: name });
-    const appUser = await syncUserToFirestore(cred.user, name);
+    const appUser = await buildAppUser(cred.user, name);
     setUser(appUser);
   };
 
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
     const cred = await signInWithPopup(auth, provider);
-    const appUser = await syncUserToFirestore(cred.user);
+    const appUser = await buildAppUser(cred.user);
     setUser(appUser);
   };
 
