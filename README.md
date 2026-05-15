@@ -29,21 +29,6 @@
 
 ---
 
-## 🔐 Admin Panel Access
-
-The platform includes a full-featured **Admin Dashboard** backed by Firebase Firestore.
-
-| Step | Action |
-|------|--------|
-| 1 | Login with **`vansh6dec@gmail.com`** (Google or email) |
-| 2 | The **Admin** tab appears automatically in the Dashboard |
-| 3 | View all users, manage roles, and browse uploaded files in real-time |
-
-**To promote any user to admin:**
-- Go to **Admin → Users tab** → click the 🛡️ **Shield** icon next to any user
-- Role changes are saved to Firestore instantly
-
----
 
 ## ✨ Key Features
 
