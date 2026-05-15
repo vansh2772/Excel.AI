@@ -3,7 +3,7 @@ import { DataRow, DatasetInfo, AnalyticsData } from '../types';
 import { calculateStatistics } from '../utils/dataProcessing';
 import { processFile } from '../utils/fileProcessing';
 import { db, storage } from '../services/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth } from '../services/firebase';
 
@@ -48,18 +48,21 @@ export const useDataStore = () => {
 
       const analyticsData = calculateStatistics(processedData);
 
-      // Upload file to Firebase Storage
+      // --- Firebase Storage (Optional/Free Tier Fallback) ---
       let storageUrl = '';
-      try {
-        const uid = auth.currentUser?.uid || 'anonymous';
-        const storageRef = ref(storage, `uploads/${uid}/${Date.now()}_${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        storageUrl = await getDownloadURL(snapshot.ref);
-      } catch (storageErr) {
-        console.warn('Storage upload failed (continuing without):', storageErr);
+      if (storage) {
+        try {
+          const uid = auth.currentUser?.uid || 'anonymous';
+          const storageRef = ref(storage, `uploads/${uid}/${Date.now()}_${file.name}`);
+          const snapshot = await uploadBytes(storageRef, file);
+          storageUrl = await getDownloadURL(snapshot.ref);
+        } catch (storageErr) {
+          // If user hasn't upgraded or enabled Storage, we just log and skip
+          console.warn('Storage upload skipped (Spark Plan limitation or location not set).');
+        }
       }
 
-      // Save metadata to Firestore
+      // --- Firestore Metadata (Database - Always Works) ---
       try {
         const uploadRecord: Omit<UploadRecord, 'id'> = {
           userId: auth.currentUser?.uid || 'anonymous',
@@ -77,10 +80,10 @@ export const useDataStore = () => {
           uploadDate: serverTimestamp(),
         });
       } catch (dbErr) {
-        console.warn('Firestore save failed (continuing without):', dbErr);
+        console.warn('Firestore metadata sync skipped:', (dbErr as Error).message);
       }
 
-      // Cache locally
+      // Cache locally for instant access
       try {
         localStorage.setItem('currentDataset', JSON.stringify({ data: processedData, info, analytics: analyticsData }));
       } catch { /* ignore */ }
@@ -103,17 +106,9 @@ export const useDataStore = () => {
     localStorage.removeItem('currentDataset');
   }, []);
 
-  const getUserUploads = useCallback(async (): Promise<UploadRecord[]> => {
-    const uid = auth.currentUser?.uid;
-    if (!uid) return [];
-    const q = query(collection(db, 'uploads'), where('userId', '==', uid), orderBy('uploadDate', 'desc'));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as UploadRecord));
-  }, []);
-
   return {
     data, datasetInfo, analytics, loading, error,
-    loadFile, clearData, getUserUploads,
+    loadFile, clearData,
     hasData: data.length > 0 && !!datasetInfo && !!analytics,
     getDataSample: (n = 100) => data.slice(0, n),
     getColumnData: (col: string) => data.map(r => r[col]).filter(v => v !== null && v !== undefined),
